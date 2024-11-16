@@ -7,7 +7,6 @@ import ru.tms.task.dto.task.TaskCreateDto;
 import ru.tms.task.dto.task.TaskResponseDto;
 import ru.tms.task.dto.task.TaskUpdateDto;
 import ru.tms.task.enums.TaskPriority;
-import ru.tms.task.enums.TaskStatus;
 
 import java.util.List;
 

@@ -1,7 +1,6 @@
 package ru.tms.task.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.tms.task.enums.TaskPriority;

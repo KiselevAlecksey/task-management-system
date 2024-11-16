@@ -77,7 +77,7 @@ public class AdminTaskController {
         log.info("<== Assigned executor to task id {} complete", taskId);
         return assigned;
     }
-    
+
     @PatchMapping("/{taskId}/status-and-priority")
     public TaskResponseDto changeStatusOrPriority(@RequestParam(required = false) String status,
                                                   @RequestParam(required = false) String priority,
@@ -94,6 +94,7 @@ public class AdminTaskController {
         TaskStatus taskStatus = null;
         TaskPriority taskPriority = null;
 
+
         if (status != null) {
             String statusUpperCase = status.toUpperCase();
             taskStatus = TaskStatus.from(statusUpperCase)
@@ -103,7 +104,7 @@ public class AdminTaskController {
         if (priority != null) {
             String priorityUpperCase = priority.toUpperCase();
             taskPriority = TaskPriority.from(priorityUpperCase)
-                    .orElseThrow(() -> new IllegalArgumentException("не поддерживаемое состояние: " + status));
+                    .orElseThrow(() -> new IllegalArgumentException("не поддерживаемое состояние: " + priority));
         }
 
         return new AdminStatusAndPriorityParam(taskStatus, taskPriority);
