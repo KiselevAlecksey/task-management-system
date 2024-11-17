@@ -61,14 +61,6 @@ public class AdminTaskController {
         log.info("<== Removed task with id {} complete", taskId);
     }
 
-    @GetMapping("/{taskId}")
-    public TaskResponseDto getById(@PathVariable long taskId) {
-        log.info("==> Get task with id {} start", taskId);
-        TaskResponseDto task = taskService.getById(taskId);
-        log.info("<== Retrieved task with id {} complete", taskId);
-        return task;
-    }
-
     @PatchMapping("/{taskId}/assign/{executorId}")
     public TaskResponseDto assignExecutor(@RequestHeader(USER_ID_HEADER) long creatorId,
                                           @PathVariable long taskId, @PathVariable long executorId) {
