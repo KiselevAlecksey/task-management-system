@@ -49,4 +49,12 @@ public class TaskController {
         log.info("<== Comment created {} complete", dto);
         return dto;
     }
+
+    @GetMapping("/{taskId}")
+    public TaskResponseDto getById(@PathVariable long taskId) {
+        log.info("==> Get task with id {} start", taskId);
+        TaskResponseDto task = taskService.getById(taskId);
+        log.info("<== Retrieved task with id {} complete", taskId);
+        return task;
+    }
 }
