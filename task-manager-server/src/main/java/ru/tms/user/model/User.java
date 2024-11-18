@@ -4,17 +4,19 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder(toBuilder = true)
 public class User implements UserDetails {
 
@@ -28,8 +30,7 @@ public class User implements UserDetails {
     @Builder.Default
     private Role role = Role.GUEST;
 
-    public User(String name, String email, Role role) {
-        this.name = name;
+    public User(String email, Role role) {
         this.email = email;
         this.role = role;
     }

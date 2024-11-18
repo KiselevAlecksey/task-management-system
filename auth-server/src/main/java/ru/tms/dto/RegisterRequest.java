@@ -1,5 +1,6 @@
 package ru.tms.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,8 +13,14 @@ import ru.tms.user.Role;
 @NoArgsConstructor
 public class RegisterRequest {
 
+    @NotBlank
     private String name;
+
+    @NotBlank
     private String email;
+
+    @NotBlank
     private String password;
+
     private Role role;
 }

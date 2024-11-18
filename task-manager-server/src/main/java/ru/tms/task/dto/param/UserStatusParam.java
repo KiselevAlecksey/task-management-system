@@ -7,8 +7,6 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import ru.tms.task.enums.TaskStatus;
 
-import java.util.UUID;
-
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @FieldDefaults(level = AccessLevel.PRIVATE)

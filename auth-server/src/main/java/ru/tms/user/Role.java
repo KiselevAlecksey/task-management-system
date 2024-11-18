@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,5 +30,13 @@ public enum Role {
         return authorities;
     }
 
+    public static Optional<Role> from(String roleName) {
+        for (Role value : values()) {
+            if (value.name().equals(roleName)) {
+                return Optional.of(value);
+            }
+        }
+        return Optional.empty();
+    }
 }
 

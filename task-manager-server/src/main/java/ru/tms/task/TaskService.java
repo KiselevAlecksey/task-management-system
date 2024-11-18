@@ -9,7 +9,6 @@ import ru.tms.task.dto.task.TaskUpdateDto;
 import ru.tms.task.enums.TaskPriority;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface TaskService {
 
@@ -23,7 +22,7 @@ public interface TaskService {
 
     List<TaskResponseDto> getPage(CommonTaskParam taskParam);
 
-    TaskResponseDto assignExecutor(long taskId, Long executorId);
+    TaskResponseDto assignExecutor(long taskId, long executorId);
 
     TaskResponseDto changeStatusOrPriority(AdminStatusAndPriorityParam param);
 

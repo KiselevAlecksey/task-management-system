@@ -30,6 +30,15 @@ import io.swagger.v3.oas.annotations.servers.Server;
                 @Server(
                         description = "Local TMS",
                         url = "http://localhost:8080"
+                ),
+                @Server(
+                        description = "Local Auth",
+                        url = "http://localhost:9090"
+                ),
+
+                @Server(
+                        description = "PROD ENV",
+                        url = "https://some-url.com"
                 )
         },
         security = {
