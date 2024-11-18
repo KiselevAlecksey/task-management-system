@@ -2,7 +2,7 @@ package ru.tms.user.dto;
 
 public record UserResponseDto(
 
-        Long id,
+        long id,
 
         String name,
 

@@ -38,14 +38,14 @@ public class TaskServiceImpl implements TaskService {
     public TaskResponseDto create(TaskCreateDto createDto) {
         Task task = taskMapper.toTask(createDto);
 
-        User creator = userRepository.findById(createDto.getCreatorId())
-                .orElseThrow(() -> new NotFoundException("пользователь не найден"));
+        User user = userRepository.findById(task.getCreator().getId())
+                .orElseThrow(() -> new NotFoundException("Пользователь \"автор\" не найден"));
 
-        User executor = userRepository.findById(createDto.getExecutorId())
-                .orElseThrow(() -> new NotFoundException("пользователь не найден"));
+        User executor = userRepository.findById(task.getExecutor().getId())
+                .orElseThrow(() -> new NotFoundException("Пользователь \"исполнитель\" не найден"));
 
-        task.getCreator().setEmail(creator.getEmail());
-        task.getCreator().setName(creator.getName());
+        task.getCreator().setEmail(user.getEmail());
+        task.getCreator().setName(user.getName());
 
         task.getExecutor().setName(executor.getName());
         task.getExecutor().setEmail(executor.getEmail());
@@ -140,7 +140,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskResponseDto assignExecutor(long taskId, Long executorId) {
+    public TaskResponseDto assignExecutor(long taskId, long executorId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new NotFoundException("Задача не найдена"));
 

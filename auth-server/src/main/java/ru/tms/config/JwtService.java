@@ -11,18 +11,13 @@ import java.util.function.Function;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import ru.tms.exception.NotFoundException;
-import ru.tms.user.UserRepository;
-import ru.tms.user.model.Role;
-import ru.tms.user.model.User;
+import ru.tms.user.Role;
 
 @Service
-@RequiredArgsConstructor
 public class JwtService {
 
     @Value("${application.security.jwt.secret-key}")
@@ -31,30 +26,19 @@ public class JwtService {
     private long jwtExpiration;
     @Value("${application.security.jwt.refresh-token.expiration}")
     private long refreshExpiration;
-    @Value("${application.security.jwt.short.expiration}")
-    private long jwtShortExpiration;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public String generateToken(User user) {
+    public String generateToken(UserDetails userDetails) {
         Map<String, Object> extraClaims = new HashMap<>();
-        String role = extractRoleFromUserDetails(user);
+        // Извлекаем роль из UserDetails.  Способ извлечения зависит от вашей реализации UserDetails
+        String role = extractRoleFromUserDetails(userDetails);
         if (role != null && !role.isEmpty()) {
             extraClaims.put("role", role);
         }
-
-        extraClaims.put("userId", user.getId());
-        extraClaims.put("name", user.getName());
-
-        return generateToken(extraClaims, user);
-    }
-
-    public String generateTokenUserCreate(User user) {
-        Map<String, Object> extraClaims = new HashMap<>();
-        extraClaims.put("role", "USER_CREATOR");
-        return buildToken(extraClaims, user, jwtShortExpiration);
+        return generateToken(extraClaims, userDetails);
     }
 
     private String extractRoleFromUserDetails(UserDetails userDetails) {
@@ -67,7 +51,7 @@ public class JwtService {
                 }
             }
         }
-        return Role.GUEST.getRoleName();
+        return null; // Или выбросить исключение, если роль не найдена
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
@@ -89,8 +73,18 @@ public class JwtService {
         return buildToken(new HashMap<>(), userDetails, refreshExpiration);
     }
 
+    // Метод для извлечения имени пользователя из токена
+    public String getUsernameFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSignInKey()) // Использование SecretKey
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject(); // Возвращает имя пользователя
+    }
+
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
+        final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 

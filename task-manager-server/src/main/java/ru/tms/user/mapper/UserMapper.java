@@ -1,21 +1,19 @@
 package ru.tms.user.mapper;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.tms.user.dto.UserCreateDto;
 import ru.tms.user.dto.UserResponseDto;
 import ru.tms.user.dto.UserUpdateDto;
 import ru.tms.user.model.User;
 
+
 @Component
-@RequiredArgsConstructor
 public final class UserMapper {
 
     public User mapToUser(UserCreateDto request) {
         return User.builder()
                 .email(request.getEmail())
                 .name(request.getName())
-                .role(request.getERole())
                 .build();
     }
 
@@ -23,7 +21,6 @@ public final class UserMapper {
         return User.builder()
                 .email(request.getEmail())
                 .name(request.getName())
-                .role(request.getERole())
                 .build();
     }
 
@@ -42,9 +39,6 @@ public final class UserMapper {
         }
         if (request.hasName()) {
             user.setName(request.getName());
-        }
-        if (request.hasRole()) {
-            user.setRole(request.getERole());
         }
         return user;
     }

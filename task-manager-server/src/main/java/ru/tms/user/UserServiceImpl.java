@@ -1,8 +1,9 @@
 package ru.tms.user;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.tms.exception.NotFoundException;
 import ru.tms.exception.ParameterConflictException;
 import ru.tms.user.dto.UserCreateDto;
@@ -11,9 +12,9 @@ import ru.tms.user.dto.UserUpdateDto;
 import ru.tms.user.mapper.UserMapper;
 import ru.tms.user.model.User;
 
-import java.util.UUID;
+import java.util.List;
 
-@Slf4j
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -21,6 +22,19 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private final UserMapper userMapper;
+
+    @Override
+    public List<UserResponseDto> findAll() {
+        return userRepository.findAll().stream().map(userMapper::mapToUserDto).toList();
+    }
+
+    @Override
+    public UserResponseDto getById(long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
+        return userMapper.mapToUserDto(user);
+    }
 
     @Override
     public UserResponseDto create(UserCreateDto userRequest) {
@@ -35,6 +49,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponseDto update(UserUpdateDto userRequest) {
 
         User userUpdated = userRepository.findById(userRequest.getId())
@@ -51,12 +66,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void remove(Long id) {
+    @Transactional
+    public void remove(long id) {
         userRepository.deleteById(id);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     private void checkEmailConflict(String email) {
-        if (userRepository.existsByEmailContainingIgnoreCase(email)) {
+        UserEmail userEmails = userRepository.findByEmailContainingIgnoreCase(email);
+
+        if (userEmails != null && userEmails.getEmail().equals(email)) {
             throw new ParameterConflictException("email", "Тайкой email уже занят");
         }
     }
