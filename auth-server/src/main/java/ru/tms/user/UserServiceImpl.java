@@ -1,6 +1,8 @@
 package ru.tms.user;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +14,7 @@ import ru.tms.user.dto.UserUpdateDto;
 import ru.tms.user.mapper.UserMapper;
 import ru.tms.user.model.User;
 
+import java.security.Principal;
 import java.util.List;
 
 
@@ -23,13 +26,30 @@ public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
 
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository repository;
+    public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
 
+        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+
+        // check if the current password is correct
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalStateException("Wrong password");
+        }
+        // check if the two new passwords are the same
+        if (!request.getNewPassword().equals(request.getConfirmationPassword())) {
+            throw new IllegalStateException("Password are not the same");
+        }
+
+        // update the password
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+
+        // save the new password
+        repository.save(user);
+    }
 
     @Override
     public List<UserResponseDto> findAll() {
-
-        List<User> users = userRepository.findAll();
-
         return userRepository.findAll().stream().map(userMapper::mapToUserDto).toList();
     }
 

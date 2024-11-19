@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import ru.tms.token.Token;
+import ru.tms.user.Role;
 
 import java.util.Collection;
 import java.util.List;
@@ -22,11 +23,8 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(unique = true)
     private Long id;
     private String name;
-
-    @Column(unique = true)
     private String email;
     private String password;
 
@@ -34,7 +32,7 @@ public class User implements UserDetails {
     @Builder.Default
     private Role role = Role.GUEST;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user")
     private List<Token> tokens;
 
     public User(String email, Role role) {

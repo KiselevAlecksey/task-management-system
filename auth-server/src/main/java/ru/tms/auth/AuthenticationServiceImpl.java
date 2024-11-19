@@ -16,7 +16,7 @@ import ru.tms.dto.RegisterRequest;
 import ru.tms.token.Token;
 import ru.tms.token.TokenRepository;
 import ru.tms.token.TokenType;
-import ru.tms.user.User;
+import ru.tms.user.model.User;
 import ru.tms.user.UserRepository;
 
 import java.io.IOException;

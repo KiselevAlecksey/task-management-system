@@ -4,7 +4,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.stereotype.Component;
-import ru.tms.user.User;
+import ru.tms.user.model.User;
 
 import java.util.Optional;
 

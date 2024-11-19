@@ -3,6 +3,7 @@ package ru.tms.task.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.tms.task.TaskService;
@@ -17,6 +18,7 @@ import ru.tms.task.dto.param.AdminStatusAndPriorityParam;
 @Validated
 @RequiredArgsConstructor
 @RestController
+@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping(path = "/admin/tasks")
 public class AdminTaskController {
 
@@ -26,6 +28,7 @@ public class AdminTaskController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('admin:create')")
     public TaskResponseDto create(@RequestHeader(USER_ID_HEADER) long creatorId,
                                   @RequestBody @Validated TaskCreateDto createDto) {
         log.info("==> Create task {} start", createDto);
@@ -40,6 +43,7 @@ public class AdminTaskController {
     }
 
     @PatchMapping("/{taskId}")
+    @PreAuthorize("hasAuthority('admin:update')")
     public TaskResponseDto update(@PathVariable long taskId,
                                   @RequestBody @Validated TaskUpdateDto updateDto) {
         log.info("==> Update task with id {} start", taskId);
@@ -54,6 +58,7 @@ public class AdminTaskController {
     }
 
     @DeleteMapping("/{taskId}")
+    @PreAuthorize("hasAuthority('admin:delete')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void remove(@PathVariable long taskId) {
         log.info("==> Remove task with id {} start", taskId);
@@ -62,6 +67,7 @@ public class AdminTaskController {
     }
 
     @PatchMapping("/{taskId}/assign/{executorId}")
+    @PreAuthorize("hasAuthority('admin:update')")
     public TaskResponseDto assignExecutor(@RequestHeader(USER_ID_HEADER) long creatorId,
                                           @PathVariable long taskId, @PathVariable long executorId) {
         log.info("==> Assign executor with id {} to task ID {} start", executorId, taskId);
@@ -71,6 +77,7 @@ public class AdminTaskController {
     }
 
     @PatchMapping("/{taskId}/status-and-priority")
+    @PreAuthorize("hasAuthority('admin:update')")
     public TaskResponseDto changeStatusOrPriority(@RequestParam(required = false) String status,
                                                   @RequestParam(required = false) String priority,
                                                   @PathVariable long taskId) {
