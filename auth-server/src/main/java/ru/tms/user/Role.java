@@ -16,7 +16,8 @@ import static ru.tms.user.Permission.*;
 public enum Role {
 
     USER(Set.of(USER_READ, USER_CREATE, USER_UPDATE), "ROLE_USER"),
-    ADMIN(Set.of(ADMIN_READ, ADMIN_CREATE, ADMIN_UPDATE, ADMIN_DELETE), "ROLE_ADMIN");
+    ADMIN(Set.of(ADMIN_READ, ADMIN_CREATE, ADMIN_UPDATE, ADMIN_DELETE), "ROLE_ADMIN"),
+    GUEST(Set.of(), "ROLE_GUEST");
 
     private final Set<Permission> permissions;
     private final String roleName;

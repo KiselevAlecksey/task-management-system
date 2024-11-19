@@ -2,7 +2,7 @@ package ru.tms.token;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ru.tms.user.User;
+import ru.tms.user.model.User;
 
 @Getter
 @Setter

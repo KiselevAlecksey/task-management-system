@@ -13,7 +13,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
-import static ru.tms.user.Permission.*;
+import static ru.tms.user.model.Permission.*;
 import static ru.tms.user.model.Role.ADMIN;
 import static ru.tms.user.model.Role.USER;
 
@@ -44,11 +44,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
-                                .requestMatchers("/users/**").hasAnyRole(ADMIN.name(), USER.name())
-                                .requestMatchers(GET, "/users/**").hasAnyAuthority(ADMIN_UPDATE.name())
-                                .requestMatchers(POST, "/users/**").hasAnyAuthority(ADMIN_CREATE.name())
-                                .requestMatchers(PATCH, "/users/**").hasAnyAuthority(ADMIN_UPDATE.name())
-                                .requestMatchers(DELETE, "/users/**").hasAnyAuthority(ADMIN_DELETE.name())
                                 .requestMatchers("/users/tasks**").hasAnyRole(ADMIN.name(), USER.name())
                                 .requestMatchers(PATCH, "/users/tasks**").hasAnyAuthority(ADMIN_UPDATE.name(), USER_UPDATE.name())
                                 .requestMatchers("/admin/**").hasAnyRole(ADMIN.name())

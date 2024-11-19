@@ -3,6 +3,7 @@ package ru.tms.task.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.tms.task.TaskService;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(path = "/tasks")
+@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 public class TaskController {
 
     public static final String USER_ID_HEADER = "X-TaskManager-User-Id";
@@ -25,6 +27,7 @@ public class TaskController {
     private final TaskService taskService;
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
     public List<TaskResponseDto> getPage(@RequestParam(required = false) Long creatorId,
                                          @RequestParam(required = false) Long executorId,
                                          @RequestParam(defaultValue = "0") int from,
@@ -38,6 +41,7 @@ public class TaskController {
 
     @PostMapping("/{taskId}/comments")
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyAuthority('admin:create', 'user:create')")
     public CommentResponseDto createComment(
             @RequestHeader(USER_ID_HEADER) long userId,
             @PathVariable long taskId,
@@ -51,6 +55,7 @@ public class TaskController {
     }
 
     @GetMapping("/{taskId}")
+    @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
     public TaskResponseDto getById(@PathVariable long taskId) {
         log.info("==> Get task with id {} start", taskId);
         TaskResponseDto task = taskService.getById(taskId);

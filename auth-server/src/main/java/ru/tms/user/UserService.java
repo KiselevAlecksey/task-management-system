@@ -1,35 +1,20 @@
 package ru.tms.user;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
-import java.security.Principal;
+import ru.tms.user.dto.UserCreateDto;
+import ru.tms.user.dto.UserResponseDto;
+import ru.tms.user.dto.UserUpdateDto;
 
-@Service
-@RequiredArgsConstructor
-public class UserService {
+import java.util.List;
 
-    private final PasswordEncoder passwordEncoder;
-    private final UserRepository repository;
-    public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
+public interface UserService {
+    List<UserResponseDto> findAll();
 
-        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+    UserResponseDto getById(long id);
 
-        // check if the current password is correct
-        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
-            throw new IllegalStateException("Wrong password");
-        }
-        // check if the two new passwords are the same
-        if (!request.getNewPassword().equals(request.getConfirmationPassword())) {
-            throw new IllegalStateException("Password are not the same");
-        }
+    UserResponseDto create(UserCreateDto userRequest);
 
-        // update the password
-        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+    UserResponseDto update(UserUpdateDto userRequest);
 
-        // save the new password
-        repository.save(user);
-    }
+    void remove(long id);
 }
