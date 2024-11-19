@@ -17,7 +17,6 @@ import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static ru.tms.user.Permission.*;
 import static ru.tms.user.Role.ADMIN;
-import static ru.tms.user.Role.USER;
 
 @Configuration
 @EnableWebSecurity
