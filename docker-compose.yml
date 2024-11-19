@@ -1,77 +1,37 @@
 services:
-  auth-server:
-    profiles:
-      - dev
-    container_name: tms-auth-container
-    build: auth-server
-    image: tms-auth-image
-    restart: "no"
-    ports:
-      - "9090:9090"
-    healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:9090/actuator/health || exit 1
-      interval: 30s
-      timeout: 5s
-      start_period: 30s
-      retries: 5
-    labels:
-      amplicode.image: tms-auth-server
-    environment:
-      - TASK_SERVER_URL=http://server:8080
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5433/auth
-      - SPRING_DATASOURCE_USERNAME=auth
-      - SPRING_DATASOURCE_PASSWORD=auth
-    depends_on:
-      - db-auth
-
-  task-manager-server:
-    profiles:
-      - dev
-    container_name: task-manager-server
-    build: task-manager-server
-    image: task-manager-image
-    restart: "no"
+  gateway:
+    build: gateway
+    image: shareit-gateway
+    container_name: shareit-gateway
     ports:
       - "8080:8080"
-    healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
-      interval: 30s
-      timeout: 5s
-      start_period: 30s
-      retries: 5
-    labels:
-      amplicode.image: task-manager-server
     depends_on:
-      - db-tms
+      - server
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/tms
-      - SPRING_DATASOURCE_USERNAME=tms
-      - SPRING_DATASOURCE_PASSWORD=tms
+      - SHAREIT_SERVER_URL=http://server:9090
 
-  db-tms:
+  server:
+    build: server
+    image: shareit-server
+    container_name: shareit-server
+    ports:
+      - "9090:9090"
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shareit
+      - SPRING_DATASOURCE_USERNAME=shareit
+      - SPRING_DATASOURCE_PASSWORD=shareit
+
+  db:
     image: postgres:16.1
-    container_name: postgres-tms
+    container_name: postgres
     ports:
       - "6541:5432"
     environment:
-      - POSTGRES_PASSWORD=tms
-      - POSTGRES_USER=tms
-      - POSTGRES_DB=tms
-    healthcheck:
-      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
-      timeout: 5s
-      interval: 5s
-      retries: 10
-
-  db-auth:
-    image: postgres:16.1
-    container_name: postgres-auth
-    ports:
-      - "6542:5433"
-    environment:
-      - POSTGRES_PASSWORD=auth
-      - POSTGRES_USER=auth
-      - POSTGRES_DB=auth
+      - POSTGRES_PASSWORD=shareit
+      - POSTGRES_USER=shareit
+      - POSTGRES_DB=shareit
     healthcheck:
       test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
       timeout: 5s
