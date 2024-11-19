@@ -1,4 +1,4 @@
-package ru.tms.user;
+package ru.tms.user.model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import ru.tms.token.Token;
+import ru.tms.user.Role;
 
 import java.util.Collection;
 import java.util.List;
@@ -28,10 +29,16 @@ public class User implements UserDetails {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    @Builder.Default
+    private Role role = Role.GUEST;
 
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
+
+    public User(String email, Role role) {
+        this.email = email;
+        this.role = role;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

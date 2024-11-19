@@ -3,14 +3,9 @@ package ru.tms.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.tms.config.JwtService;
 import ru.tms.user.dto.UserCreateDto;
 import ru.tms.user.dto.UserResponseDto;
 import ru.tms.user.dto.UserUpdateDto;
@@ -27,6 +22,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
+    @PreAuthorize("hasAuthority('admin:read')")
     public List<UserResponseDto> findAll() {
         log.info("==> Users get all start");
         List<UserResponseDto> list = userService.findAll();
@@ -35,6 +31,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('admin:read')")
     public UserResponseDto getById(@PathVariable long id) {
         log.info("==> User get {} start", id);
         UserResponseDto user = userService.getById(id);
@@ -44,6 +41,7 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('admin:create')")
     public UserResponseDto create(@RequestBody @Validated UserCreateDto userRequest) {
         log.info("==> Create user is {} start", userRequest.getEmail());
         UserResponseDto created = userService.create(userRequest);
@@ -52,6 +50,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasAuthority('admin:update')")
     public UserResponseDto update(@RequestBody @Validated UserUpdateDto userRequest, @PathVariable long id) {
         log.info("==> Update user is id {} start", id);
         userRequest.setId(id);
@@ -61,6 +60,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('admin:delete')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void userRemove(@PathVariable long id) {
         log.info("==> Users remove user id {} start", id);
