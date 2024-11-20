@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     private final PasswordEncoder passwordEncoder;
-    private final UserRepository repository;
+
 
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
 
@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 
-        repository.save(user);
+        userRepository.save(user);
     }
 
     @Override
