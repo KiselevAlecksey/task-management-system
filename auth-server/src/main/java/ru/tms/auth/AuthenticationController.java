@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.tms.dto.AuthenticationResponse;
 import ru.tms.dto.AuthenticationRequest;
 import ru.tms.dto.RegisterRequest;
+import ru.tms.user.model.Role;
 
 import java.io.IOException;
 
@@ -29,7 +31,11 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody @Validated RegisterRequest request) {
-        return ResponseEntity.ok(authService.register(request));
+        Role role = Role.from(request.getRole())
+                .orElseThrow(() -> new IllegalArgumentException("Не поддерживаемая роль: " + request.getRole()));
+
+        request.setERole(role);
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));
     }
 
     @PostMapping("/authenticate")

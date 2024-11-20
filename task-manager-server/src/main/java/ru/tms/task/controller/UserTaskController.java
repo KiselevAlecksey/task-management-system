@@ -25,8 +25,8 @@ public class UserTaskController {
     public TaskResponseDto changeStatus(@RequestHeader(USER_ID_HEADER) long userId,
             @RequestParam(required = false) String status, @PathVariable long taskId) {
         log.info("==> Change status {} start", status);
-            TaskStatus taskStatus = TaskStatus.from(status)
-                    .orElseThrow(() -> new IllegalArgumentException("Не поддерживаемое состояние: " + status));
+        TaskStatus taskStatus = TaskStatus.from(status)
+                .orElseThrow(() -> new IllegalArgumentException("Не поддерживаемое состояние: " + status));
 
         TaskResponseDto changed = taskService.changeStatus(new UserStatusParam(taskStatus, userId, taskId));
         log.info("<== Retrieved status {} complete", status);

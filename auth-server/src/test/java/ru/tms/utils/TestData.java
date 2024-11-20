@@ -1,10 +1,8 @@
 package ru.tms.utils;
 
 import lombok.NoArgsConstructor;
-import ru.tms.auth.dto.AuthenticationRequest;
-import ru.tms.auth.dto.RegisterRequest;
+import ru.tms.dto.RegisterRequest;
 import ru.tms.token.Token;
-import ru.tms.token.TokenType;
 import ru.tms.user.dto.UserCreateDto;
 import ru.tms.user.dto.UserResponseDto;
 import ru.tms.user.dto.UserUpdateDto;
@@ -15,7 +13,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 @NoArgsConstructor
 public class TestData {
 
@@ -45,26 +42,23 @@ public class TestData {
     public static final String ROLE_GUEST = "GUEST";
     public static final String ROLE_USER = "USER";
     public static final Role EROLE_USER = Role.USER;
-    public static final String TOKEN = "mockAccessToken";
-    public static final String TOKEN_REAL = "eyJhbGciOiJIUzI1NiJ9" +
-            ".eyJyb2xlIjoiUk9MRV9VU0VSIiwic3ViIjoiaXZhbjFAZXhhbX" +
-            "BsZS5jb20iLCJpYXQiOjE3MzIwNTc1MjEsImV4cCI6MTczMjE0MzkyMX0" +
-            ".OzM7xnNCWN1ZoL7MWhKF5cP09EImjeaCiAIEl8bCOOc";
+
+    //users
 
     public static User createUser() {
         return new User(TEST_USER_ID, "Иван Иванов", "ivan@example.com", PASS, EROLE_USER, TOKENS);
     }
 
     public static UserCreateDto createUserDto() {
-        return new UserCreateDto(TEST_USER_ID, "Иван Иванов2", "ivan2@example.com", PASS, null);
+        return new UserCreateDto("Иван Иванов2", "ivan2@example.com", PASS, null);
     }
 
     public static UserCreateDto createUserDto(String name, String description) {
-        return new UserCreateDto(TEST_USER_ID, name, description, PASS, ROLE_USER);
+        return new UserCreateDto(name, description, PASS, ROLE_USER);
     }
 
     public static UserCreateDto createUserDto(String name, String email, String pass, String role) {
-        return new UserCreateDto(TEST_USER_ID, name, email, pass, role);
+        return new UserCreateDto(name, email, pass, role);
     }
 
     public static UserResponseDto createdUserDto(Long userId, String name, String description) {
@@ -84,7 +78,7 @@ public class TestData {
     }
 
     public static UserUpdateDto updateUserDto() {
-        return new UserUpdateDto(TEST_USER_ID, "Иван Петров", "petrov@example.ru", PASS, ROLE_GUEST, Role.GUEST);
+        return new UserUpdateDto(TEST_USER_ID, "Иван Иванов", "ivan@example.ru", PASS, ROLE_GUEST);
     }
 
     public static UserUpdateDto updateUserDto(Long userId, String name, String email) {
@@ -115,18 +109,17 @@ public class TestData {
     // authentication
 
     public static RegisterRequest createRegisterRequest() {
-        return new RegisterRequest(TEST_USER_ID, "Иван Иванов1", "ivan1@example.com", PASS, ROLE_USER, Role.USER);
+        return new RegisterRequest("Иван Иванов1", "ivan1@example.com", PASS, ROLE_USER, EROLE_USER);
     }
 
     public static RegisterRequest createAdminRegisterRequest() {
-        return new RegisterRequest(TEST_USER_ID, "Иван Иванов", "ivan@example.com", PASS, "ADMIN", Role.ADMIN);
+        return new RegisterRequest("Иван Иванов", "ivan@example.com", PASS, "ADMIN", Role.ADMIN);
     }
 
-    public static Token createToken(String token, String refreshToken) {
-        return new Token(TEST_ID_ONE, token, refreshToken, TokenType.BEARER, false, false, createUser());
-    }
-
-    public static AuthenticationRequest createAuthenticationRequest() {
-        return new AuthenticationRequest("ivan1@example.com", PASS);
-    }
+    /*public static AuthenticationResponse createAuthenticationResponse() {
+        return AuthenticationResponse.builder()
+                .accessToken(token)
+                .refreshToken(refreshToken)
+                .build();
+    }*/
 }
