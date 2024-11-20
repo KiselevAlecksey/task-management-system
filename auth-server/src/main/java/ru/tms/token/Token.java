@@ -10,14 +10,18 @@ import ru.tms.user.model.User;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "tokens")
 public class Token {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
     @Column(unique = true)
     public String token;
+
+    @Column(unique = true)
+    public String refreshToken;
 
     @Enumerated(EnumType.STRING)
     public TokenType tokenType = TokenType.BEARER;

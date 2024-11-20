@@ -1,8 +1,16 @@
 package ru.tms.utils;
 
 import lombok.NoArgsConstructor;
-import ru.tms.dto.AuthenticationRequest;
 import ru.tms.dto.RegisterRequest;
+import ru.tms.task.dto.comment.CommentCreateDto;
+import ru.tms.task.dto.comment.CommentResponseDto;
+import ru.tms.task.dto.param.AdminStatusAndPriorityParam;
+import ru.tms.task.dto.param.UserStatusParam;
+import ru.tms.task.dto.task.TaskCreateDto;
+import ru.tms.task.dto.task.TaskResponseDto;
+import ru.tms.task.dto.task.TaskUpdateDto;
+import ru.tms.task.enums.TaskPriority;
+import ru.tms.task.enums.TaskStatus;
 import ru.tms.token.Token;
 import ru.tms.token.TokenType;
 import ru.tms.user.dto.UserCreateDto;
@@ -12,6 +20,8 @@ import ru.tms.user.model.Role;
 import ru.tms.user.model.User;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -51,6 +61,14 @@ public class TestData {
             "BsZS5jb20iLCJpYXQiOjE3MzIwNTc1MjEsImV4cCI6MTczMjE0MzkyMX0" +
             ".OzM7xnNCWN1ZoL7MWhKF5cP09EImjeaCiAIEl8bCOOc";
 
+    public static final String USER_ID_HEADER = "X-TaskManager-User-Id";
+    public static final String TITLE = "Implement feature B";
+    public static final String DESCRIPTION = "Detailed description of the feature implementation.";
+    public static final String NO_STATUS = "NO_STATUS";
+    public static final String WAITING = "WAITING";
+    public static final String MAJOR = "MAJOR";
+    public static final String BLOCKER = "BLOCKER";
+
     public static User createUser() {
         return new User(TEST_USER_ID, "Иван Иванов", "ivan@example.com", PASS, EROLE_USER, TOKENS);
     }
@@ -81,6 +99,10 @@ public class TestData {
 
     public static UserResponseDto createdUser2Dto() {
         return new UserResponseDto(TEST_USER2_ID, "Петр Петров", "petr@example.com");
+    }
+
+    public static UserResponseDto createdUser3Dto() {
+        return new UserResponseDto(TEST_USER3_ID, "Анна Сидорова", "anna@example.com");
     }
 
     public static UserUpdateDto updateUserDto() {
@@ -126,7 +148,99 @@ public class TestData {
         return new Token(TEST_ID_ONE, token, refreshToken, TokenType.BEARER, false, false, createUser());
     }
 
-    public static AuthenticationRequest createAuthenticationRequest() {
-        return new AuthenticationRequest("ivan1@example.com", PASS);
+    // tasks
+
+    public static TaskCreateDto createTaskDto() {
+        return new TaskCreateDto(TEST_ID_ONE, TITLE, DESCRIPTION,
+                NO_STATUS, MAJOR, TEST_USER_ID, TEST_USER2_ID,
+                TaskStatus.NO_STATUS, TaskPriority.MAJOR);
+    }
+
+    public static TaskUpdateDto updateTaskDto() {
+        return new TaskUpdateDto(TEST_ID_ONE, TITLE, DESCRIPTION,
+                WAITING, BLOCKER, TEST_USER2_ID,
+                TaskStatus.WAITING, TaskPriority.BLOCKER);
+    }
+
+    public static TaskResponseDto responseTaskDto() {
+        return new TaskResponseDto(TEST_ID_ONE, TITLE, DESCRIPTION, TaskStatus.NO_STATUS,
+                TaskPriority.MAJOR, createdUserDto(), createdUser2Dto(), createCommentDtoList());
+    }
+
+    public static TaskResponseDto responseTaskDto(TaskStatus status, TaskPriority priority) {
+        return new TaskResponseDto(TEST_ID_ONE, TITLE, DESCRIPTION, status,
+                priority, createdUserDto(), createdUser2Dto(), createCommentDtoList());
+    }
+
+    public static AdminStatusAndPriorityParam getAdminParam() {
+        return new AdminStatusAndPriorityParam(TaskStatus.NO_STATUS, TaskPriority.MAJOR);
+    }
+
+    public static UserStatusParam getUserParam() {
+        return new UserStatusParam(TaskStatus.NO_STATUS, TEST_USER_ID, TEST_ID_ONE);
+    }
+
+
+    //comments
+
+    public static List<CommentResponseDto> createCommentDtoList() {
+        List<CommentResponseDto> list = new ArrayList<>(3);
+        list.add(new CommentResponseDto(TEST_ID_ONE, createdUserDto(),
+                "Велосипедом доволен, спасибо!", "2023-12-08 12:00:00"));
+        list.add(new CommentResponseDto(TEST_ID_TWO, createdUser2Dto(),
+                "Отличная книга!", "2023-10-16 10:00:00"));
+        list.add(new CommentResponseDto(TEST_ID_THREE, createdUser3Dto(),
+                "Очень удобный ноутбук.", "2023-11-21 11:00:00"));
+
+        return list;
+    }
+
+    public static CommentCreateDto createCommentDto() {
+        return new CommentCreateDto("Велосипедом доволен, спасибо!", TEST_USER_ID, TEST_ID_ONE);
+    }
+
+    public static CommentResponseDto createdCommentDto() {
+        return new CommentResponseDto(
+                TEST_ID_ONE, createdUserDto(), "Велосипедом доволен, спасибо!",
+                convertDatePattern(NOW_DATE_TIME));
+    }
+
+    public static CommentResponseDto createdCommentDto(Long commentId) {
+        return new CommentResponseDto(
+                commentId, createdUserDto(), "Велосипедом доволен, спасибо!",
+                convertDatePattern(LocalDateTime.now()));
+    }
+
+    public static CommentResponseDto createdBookCommentDto(Long commentId) {
+        return new CommentResponseDto(
+                commentId, createdUserDto(), "Отличная книга!",
+                convertDatePattern(LocalDateTime.of(2023, 10, 16, 7, 0)));
+    }
+
+    public static CommentResponseDto createdBookCommentDto() {
+        return new CommentResponseDto(
+                TEST_ID_ONE, createdUserDto(), "Отличная книга!",
+                convertDatePattern(LocalDateTime.of(2023, 10, 16, 7, 0)));
+    }
+
+    public static List<CommentResponseDto> createCommentBookDtoList() {
+        List<CommentResponseDto> list = new ArrayList<>(3);
+
+        list.add(new CommentResponseDto(
+                TEST_ID_ONE, createdUserDto(), "Отличная книга!",
+                convertDatePattern(LocalDateTime.of(2023, 10, 16, 10, 0))));
+
+        return list;
+    }
+
+    public static String convertDatePattern(LocalDateTime localDateTime) {
+        String dateTimeformatted = null;
+
+        if (localDateTime != null) {
+            dateTimeformatted = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+                    .withZone(ZoneOffset.UTC)
+                    .format(localDateTime);
+        }
+        return dateTimeformatted;
     }
 }

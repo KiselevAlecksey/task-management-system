@@ -1,6 +1,5 @@
 package ru.tms.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.constraints.Email;
@@ -32,11 +31,4 @@ public class RegisterRequest {
 
     @Hidden
     private Role eRole;
-
-    public RegisterRequest(String name, String email, String password, String role) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
 }

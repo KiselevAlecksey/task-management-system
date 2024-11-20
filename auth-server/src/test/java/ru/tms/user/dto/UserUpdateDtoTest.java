@@ -34,4 +34,15 @@ class UserUpdateDtoTest {
         UserUpdateDto dtoWithoutEmail = new UserUpdateDto();
         assertFalse(dtoWithoutEmail.hasEmail(), "hasEmail должен вернуть false, если email не установлен");
     }
+
+    @Test
+    @DisplayName("Должен проверить поле role")
+    void should_has_role() {
+        UserUpdateDto dtoWithRole = new UserUpdateDto();
+        dtoWithRole.setRole("ADMIN");
+        assertTrue(dtoWithRole.hasRole(), "hasRole должен вернуть true, если роль установлена");
+
+        UserUpdateDto dtoWithoutRole = new UserUpdateDto();
+        assertFalse(dtoWithoutRole.hasRole(), "hasRole должен вернуть false, если роль не установлена");
+    }
 }

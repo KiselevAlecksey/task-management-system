@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,6 +14,7 @@ import ru.tms.config.JwtService;
 import ru.tms.dto.AuthenticationRequest;
 import ru.tms.dto.AuthenticationResponse;
 import ru.tms.dto.RegisterRequest;
+import ru.tms.exception.NotFoundException;
 import ru.tms.token.Token;
 import ru.tms.token.TokenRepository;
 import ru.tms.token.TokenType;
@@ -22,6 +23,7 @@ import ru.tms.user.UserRepository;
 
 import java.io.IOException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -41,7 +43,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var savedUser = repository.save(user);
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
-        saveUserToken(savedUser, jwtToken);
+        saveUserToken(savedUser, jwtToken, refreshToken);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
@@ -56,21 +58,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 )
         );
         var user = repository.findByEmail(request.getEmail())
-                .orElseThrow();
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
-        saveUserToken(user, jwtToken);
+        saveUserToken(user, jwtToken, refreshToken);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
     }
 
-    private void saveUserToken(User user, String jwtToken) {
+    private void saveUserToken(User user, String jwtToken, String refreshToken) {
         var token = Token.builder()
                 .user(user)
                 .token(jwtToken)
+                .refreshToken(refreshToken)
                 .tokenType(TokenType.BEARER)
                 .expired(false)
                 .revoked(false)
@@ -105,7 +109,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             if (jwtService.isTokenValid(refreshToken, user)) {
                 var accessToken = jwtService.generateToken(user);
                 revokeAllUserTokens(user);
-                saveUserToken(user, accessToken);
+                saveUserToken(user, accessToken, refreshToken);
                 var authResponse = AuthenticationResponse.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
