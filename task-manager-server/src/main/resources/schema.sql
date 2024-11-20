@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS tasks (
   priority VARCHAR(32),
   creator_id BIGINT NOT NULL,
   executor_id BIGINT NOT NULL,
-  created_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  created_date TIMESTAMP WITHOUT TIME ZONE NOT NULL
 );
 
 -- Table: comments

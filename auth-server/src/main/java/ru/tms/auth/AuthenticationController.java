@@ -8,10 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.tms.dto.AuthenticationResponse;
 import ru.tms.dto.AuthenticationRequest;
 import ru.tms.dto.RegisterRequest;
@@ -30,12 +27,18 @@ public class AuthenticationController {
     private final AuthenticationService authService;
 
     @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<AuthenticationResponse> register(@RequestBody @Validated RegisterRequest request) {
+        log.info("Create new user: {}", request);
         Role role = Role.from(request.getRole())
                 .orElseThrow(() -> new IllegalArgumentException("Не поддерживаемая роль: " + request.getRole()));
 
         request.setERole(role);
-        return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));
+
+        ResponseEntity<AuthenticationResponse> response = ResponseEntity.status(HttpStatus.CREATED)
+                .body(authService.register(request));
+        log.info("Response from service: {}", response);
+        return response;
     }
 
     @PostMapping("/authenticate")

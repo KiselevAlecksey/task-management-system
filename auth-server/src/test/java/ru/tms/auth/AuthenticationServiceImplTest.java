@@ -5,12 +5,14 @@ import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
-import ru.tms.auth.dto.AuthenticationResponse;
+import org.springframework.test.annotation.Rollback;
+import ru.tms.dto.AuthenticationResponse;
 import ru.tms.token.Token;
 import ru.tms.token.TokenRepository;
 
