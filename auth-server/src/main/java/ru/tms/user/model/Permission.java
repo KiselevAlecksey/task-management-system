@@ -1,4 +1,4 @@
-package ru.tms.user;
+package ru.tms.user.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

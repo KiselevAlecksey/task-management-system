@@ -1,4 +1,4 @@
-package ru.tms.user;
+package ru.tms.user.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ru.tms.user.Permission.*;
+import static ru.tms.user.model.Permission.*;
 
 @Getter
 @RequiredArgsConstructor

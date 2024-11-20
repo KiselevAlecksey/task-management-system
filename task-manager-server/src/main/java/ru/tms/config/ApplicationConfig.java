@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import ru.tms.user.Role;
+import ru.tms.user.model.Role;
 import ru.tms.user.model.User;
 
 @Configuration
