@@ -2,6 +2,7 @@ package ru.tms.config;
 
 import io.jsonwebtoken.*;
 import java.security.Key;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,7 +34,7 @@ public class JwtService {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> extraClaims = new HashMap<>();
-        // Извлекаем роль из UserDetails.  Способ извлечения зависит от вашей реализации UserDetails
+
         String role = extractRoleFromUserDetails(userDetails);
         if (role != null && !role.isEmpty()) {
             extraClaims.put("role", role);
@@ -73,18 +74,8 @@ public class JwtService {
         return buildToken(new HashMap<>(), userDetails, refreshExpiration);
     }
 
-    // Метод для извлечения имени пользователя из токена
-    public String getUsernameFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getSignInKey()) // Использование SecretKey
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.getSubject(); // Возвращает имя пользователя
-    }
-
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = getUsernameFromToken(token);
+        final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 

@@ -1,6 +1,7 @@
 package ru.tms.utils;
 
 import lombok.NoArgsConstructor;
+import ru.tms.dto.RegisterRequest;
 import ru.tms.task.dto.comment.CommentCreateDto;
 import ru.tms.task.dto.comment.CommentResponseDto;
 import ru.tms.task.dto.param.AdminStatusAndPriorityParam;
@@ -24,13 +25,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 @NoArgsConstructor
 public class TestData {
 
     public static final long TEST_USER_ID = 1L;
-    public static final UUID TEST_USER_UUID = UUID.fromString("17adb078-4fc3-4c90-9f18-6e9cfdc1108d");
     public static final long TEST_USER2_ID = 2L;
     public static final long TEST_USER3_ID = 3L;
 
@@ -57,15 +56,10 @@ public class TestData {
     public static final String ROLE_USER = "USER";
     public static final Role EROLE_USER = Role.USER;
     public static final String TOKEN = "mockAccessToken";
-    public static final String TOKEN_ADMIN = "eyJhbGciOiJIUzI1NiJ9" +
+    public static final String TOKEN_REAL = "eyJhbGciOiJIUzI1NiJ9" +
             ".eyJyb2xlIjoiUk9MRV9VU0VSIiwic3ViIjoiaXZhbjFAZXhhbX" +
             "BsZS5jb20iLCJpYXQiOjE3MzIwNTc1MjEsImV4cCI6MTczMjE0MzkyMX0" +
             ".OzM7xnNCWN1ZoL7MWhKF5cP09EImjeaCiAIEl8bCOOc";
-    public static final String TOKEN_USER = "eyJhbGciOiJIUzI1NiJ9" +
-            ".eyJyb2xlIjoiVVNFUiIsIm5hbWUiOiJVc2VyIiwidXNlcklkIjoxLCJzd" +
-            "WIiOiJ1c2VyQG1haWwuY29tIiwiaWF0IjoxNzMyMzc2MzQxLCJleHAiOjE" +
-            "3MzI0NjI3NDF9.jRUDeiIqspxGZUjSFbj_n8QHgdpQg2sNNdwGxCElGJM";
-
 
     public static final String USER_ID_HEADER = "X-TaskManager-User-Id";
     public static final String TITLE = "Implement feature B";
@@ -76,23 +70,23 @@ public class TestData {
     public static final String BLOCKER = "BLOCKER";
 
     public static User createUser() {
-        return new User(TEST_USER_ID, "Иван Иванов", "ivan@example.com", EROLE_USER);
+        return new User(TEST_USER_ID, "Иван Иванов", "ivan@example.com", PASS, EROLE_USER, TOKENS);
     }
 
     public static UserCreateDto createUserDto() {
-        return new UserCreateDto(TEST_USER_ID, "Иван Иванов2", "ivan2@example.com", PASS, null);
+        return new UserCreateDto("Иван Иванов2", "ivan2@example.com", PASS, null);
     }
 
     public static UserCreateDto createUserDto(String name, String description) {
-        return new UserCreateDto(TEST_USER_ID, name, description, ROLE_USER, EROLE_USER);
+        return new UserCreateDto(name, description, PASS, ROLE_USER);
     }
 
-    public static UserCreateDto createUserDto(String name, String email, String role, Role eRole) {
-        return new UserCreateDto(TEST_USER_ID, name, email, role, eRole);
+    public static UserCreateDto createUserDto(String name, String email, String pass, String role) {
+        return new UserCreateDto(name, email, pass, role);
     }
 
     public static UserResponseDto createdUserDto(Long userId, String name, String description) {
-        return new UserResponseDto(TEST_USER_ID, name, description);
+        return new UserResponseDto(userId, name, description);
     }
 
     public static UserResponseDto createdUserDto(String name, String description) {
@@ -112,15 +106,15 @@ public class TestData {
     }
 
     public static UserUpdateDto updateUserDto() {
-        return new UserUpdateDto(TEST_USER_ID, "Иван Петров", "petrov@example.ru", ROLE_GUEST, Role.GUEST);
+        return new UserUpdateDto(TEST_USER_ID, "Иван Петров", "petrov@example.ru", PASS, ROLE_GUEST, Role.GUEST);
     }
 
     public static UserUpdateDto updateUserDto(Long userId, String name, String email) {
-        return new UserUpdateDto(userId, name, email, ROLE_GUEST, Role.GUEST);
+        return new UserUpdateDto(userId, name, email, PASS, ROLE_GUEST);
     }
 
     public static UserUpdateDto updateUserDto(String name, String email, String pass, String role) {
-        return new UserUpdateDto(TEST_USER_ID, name, email, role, null);
+        return new UserUpdateDto(TEST_USER_ID, name, email, pass, role);
     }
 
     public static UserResponseDto updatedUserDto(Long userId, String name, String description) {
@@ -142,12 +136,12 @@ public class TestData {
 
     // authentication
 
-    public static UserCreateDto createUserCreateDto() {
-        return new UserCreateDto(TEST_USER_ID, "Иван Иванов2", "ivan2@example.com", PASS, Role.USER);
+    public static RegisterRequest createRegisterRequest() {
+        return new RegisterRequest("Иван Иванов1", "ivan1@example.com", PASS, ROLE_USER, Role.USER);
     }
 
-    public static UserCreateDto createAdminUserCreateDto() {
-        return new UserCreateDto(TEST_USER_ID, "Иван Иванов2", "ivan2@example.com", PASS, Role.ADMIN);
+    public static RegisterRequest createAdminRegisterRequest() {
+        return new RegisterRequest("Иван Иванов", "ivan@example.com", PASS, "ADMIN", Role.ADMIN);
     }
 
     public static Token createToken(String token, String refreshToken) {
@@ -170,11 +164,6 @@ public class TestData {
 
     public static TaskResponseDto responseTaskDto() {
         return new TaskResponseDto(TEST_ID_ONE, TITLE, DESCRIPTION, TaskStatus.NO_STATUS,
-                TaskPriority.MAJOR, createdUserDto(), createdUser2Dto(), createCommentDtoList());
-    }
-
-    public static TaskResponseDto responseTaskDtoStatusWaiting() {
-        return new TaskResponseDto(TEST_ID_ONE, TITLE, DESCRIPTION, TaskStatus.WAITING,
                 TaskPriority.MAJOR, createdUserDto(), createdUser2Dto(), createCommentDtoList());
     }
 
