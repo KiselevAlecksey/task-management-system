@@ -16,6 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import ru.tms.exception.NotFoundException;
 import ru.tms.token.TokenRepository;
 import ru.tms.user.UserRepository;
+import ru.tms.user.model.User;
 
 import java.io.IOException;
 
@@ -47,8 +48,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         jwt = authHeader.substring(7);
         userEmail = jwtService.extractUsername(jwt);
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userRepository.findByEmail(userEmail)
-                    .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+            User user = userRepository.findByEmail(userEmail).orElseThrow();
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
             var isTokenValid = tokenRepository.findByToken(jwt)
                     .map(t -> !t.isExpired() && !t.isRevoked())
                     .orElse(false);

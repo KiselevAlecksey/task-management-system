@@ -18,7 +18,7 @@ import ru.tms.task.dto.param.AdminStatusAndPriorityParam;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@PreAuthorize("hasRole('ROLE_ADMIN')")
+@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping(path = "/admin/tasks")
 public class AdminTaskController {
 
