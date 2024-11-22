@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.tms.config.JwtService;
 import ru.tms.exception.ParameterNotValidException;
 import ru.tms.task.dto.comment.CommentCreateDto;
 import ru.tms.task.dto.comment.CommentResponseDto;
@@ -38,14 +40,14 @@ public class TaskServiceImpl implements TaskService {
     public TaskResponseDto create(TaskCreateDto createDto) {
         Task task = taskMapper.toTask(createDto);
 
-        User user = userRepository.findById(task.getCreator().getId())
-                .orElseThrow(() -> new NotFoundException("Пользователь \"автор\" не найден"));
+        User creator = userRepository.findById(createDto.getExecutorId())
+                .orElseThrow(() -> new NotFoundException("пользователь не найден"));
 
-        User executor = userRepository.findById(task.getExecutor().getId())
-                .orElseThrow(() -> new NotFoundException("Пользователь \"исполнитель\" не найден"));
+        User executor = userRepository.findById(createDto.getExecutorId())
+                .orElseThrow(() -> new NotFoundException("пользователь не найден"));
 
-        task.getCreator().setEmail(user.getEmail());
-        task.getCreator().setName(user.getName());
+        task.getCreator().setEmail(creator.getEmail());
+        task.getCreator().setName(creator.getName());
 
         task.getExecutor().setName(executor.getName());
         task.getExecutor().setEmail(executor.getEmail());

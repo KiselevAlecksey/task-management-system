@@ -2,7 +2,6 @@ package ru.tms.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.Hidden;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,27 +16,19 @@ import ru.tms.user.model.Role;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserCreateDto {
+
+    @NotBlank
     Long id;
 
     @NotBlank
     String name;
 
     @NotBlank
-    @Email
     String email;
-
-    @NotBlank
-    String password;
 
     String role;
 
     @Hidden
     Role eRole;
 
-    public UserCreateDto(String name, String email, String password, String role) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
 }

@@ -2,7 +2,6 @@ package ru.tms.config;
 
 import io.jsonwebtoken.*;
 import java.security.Key;
-import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,13 +11,18 @@ import java.util.function.Function;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import ru.tms.exception.NotFoundException;
+import ru.tms.user.UserRepository;
 import ru.tms.user.model.Role;
+import ru.tms.user.model.User;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
     @Value("${application.security.jwt.secret-key}")
@@ -32,14 +36,17 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(User user) {
         Map<String, Object> extraClaims = new HashMap<>();
-
-        String role = extractRoleFromUserDetails(userDetails);
+        String role = extractRoleFromUserDetails(user);
         if (role != null && !role.isEmpty()) {
             extraClaims.put("role", role);
         }
-        return generateToken(extraClaims, userDetails);
+
+        extraClaims.put("userId", user.getId());
+        extraClaims.put("name", user.getName());
+
+        return generateToken(extraClaims, user);
     }
 
     private String extractRoleFromUserDetails(UserDetails userDetails) {
@@ -52,7 +59,7 @@ public class JwtService {
                 }
             }
         }
-        return null; // Или выбросить исключение, если роль не найдена
+        return Role.GUEST.getRoleName();
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
@@ -92,7 +99,7 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    public Claims extractAllClaims(String token) {
+    private Claims extractAllClaims(String token) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(getSignInKey())

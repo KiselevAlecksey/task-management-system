@@ -6,9 +6,14 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import ru.tms.user.UserRepository;
+import ru.tms.user.model.Role;
+import ru.tms.user.model.User;
 
 import java.security.Key;
 import java.util.Date;
@@ -17,6 +22,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
     @Value("${application.security.jwt.secret-key}")
@@ -25,6 +31,8 @@ public class JwtService {
     private long jwtExpiration;
     @Value("${application.security.jwt.refresh-token.expiration}")
     private long refreshExpiration;
+
+    private final UserRepository userRepository;
 
     public String generateToken(String username) {
         return Jwts.builder()
@@ -35,11 +43,34 @@ public class JwtService {
                 .compact();
     }
 
-    public Claims validateToken(String token) {
+    public Claims extractClaims(String token) {
         return extractAllClaims(token);
     }
 
-    //
+    public UserDetails extractUser(String token) {
+            Claims claims = extractClaims(token);
+            if (claims == null) {
+                throw new UsernameNotFoundException("Invalid token");
+            }
+
+            String email = claims.getSubject();
+            String role = claims.get("role", String.class);
+            String name = claims.get("name", String.class);
+            Long userId = claims.get("userId", Long.class);
+
+            if (email == null || role == null) {
+                throw new UsernameNotFoundException("Invalid JWT claims");
+            }
+
+            Role erole = Role.from(role)
+                    .orElseThrow(() -> new IllegalArgumentException("Не поддерживаемая роль: " + role));
+
+            User user = new User(userId, name, email, erole);
+
+            userRepository.save(user);
+
+            return user;
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
