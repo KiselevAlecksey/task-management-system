@@ -2,8 +2,7 @@ package ru.tms.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.Hidden;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,17 +15,17 @@ import ru.tms.user.model.Role;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserCreateDto {
+public class UserUpdateDto {
+
     Long id;
 
-    @NotBlank
+    @Size(min = 4)
     String name;
 
-    @NotBlank
-    @Email
+    @Size(min = 4)
     String email;
 
-    @NotBlank
+    @Size(min = 4)
     String password;
 
     String role;
@@ -34,10 +33,28 @@ public class UserCreateDto {
     @Hidden
     Role eRole;
 
-    public UserCreateDto(String name, String email, String password, String role) {
+    public UserUpdateDto(Long id, String name, String email, String password, String role) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;
+    }
+
+
+    public boolean hasRole() {
+        return isNotBlank(role);
+    }
+
+    public boolean hasName() {
+        return isNotBlank(name);
+    }
+
+    public boolean hasEmail() {
+        return isNotBlank(email);
+    }
+
+    boolean isNotBlank(String value) {
+        return value != null && !value.isBlank();
     }
 }

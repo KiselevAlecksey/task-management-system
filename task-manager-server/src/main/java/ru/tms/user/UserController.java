@@ -7,7 +7,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientException;
 import ru.tms.exception.NotFoundException;
 import ru.tms.user.dto.UserCreateDto;
 import ru.tms.user.dto.UserResponseDto;
@@ -15,7 +14,6 @@ import ru.tms.user.dto.UserUpdateDto;
 import ru.tms.user.model.Role;
 
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
@@ -23,8 +21,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping(path = "/users")
+@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
     private final String TOKEN_BEARER = "Authorization";
     private final UserService userService;
@@ -50,7 +48,7 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('admin:create')")
-    public UserResponseDto create(@RequestHeader(TOKEN_BEARER) String token, @RequestBody @Validated UserCreateDto userRequest) {
+    public UserResponseDto create(@RequestBody @Validated UserCreateDto userRequest) {
         log.info("==> Create user is {} start", userRequest.getEmail());
         if (userRequest.getRole() != null) {
             Role role = Role.from(userRequest.getRole().toUpperCase())
@@ -59,25 +57,6 @@ public class UserController {
         }
         UserResponseDto created = userService.create(userRequest);
         log.info("<== Created user is {} complete", userRequest.getEmail());
-
-        userRequest.setId(created.id());
-
-        RestClient client = RestClient.create("http://localhost:8080");
-        log.info("==> Create user is {} to task-manager-server start", userRequest.getEmail());
-        try {
-            UserResponseDto userResponseDto = client.post().uri("/users").contentType(APPLICATION_JSON)
-                    .header(TOKEN_BEARER, token)
-                    .body(userRequest)
-                    .retrieve()
-                    .onStatus(status -> status.value() == 404, (request, response) -> {
-                        throw new NotFoundException("User not created");
-                    })
-                    .body(UserResponseDto.class);
-        } catch (RestClientException e) {
-            log.info("==> Ошибка запроса к серверу: " + e.getMessage(), userRequest.getEmail());
-        }
-
-        log.info("<== Created user is {} to task-manager-server end", userRequest.getEmail());
         return created;
     }
 
