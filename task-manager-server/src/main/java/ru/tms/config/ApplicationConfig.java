@@ -14,7 +14,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.tms.auditing.ApplicationAuditAware;
-import ru.tms.user.UserRepository;
 import ru.tms.user.model.Role;
 import ru.tms.user.model.User;
 
@@ -22,12 +21,29 @@ import ru.tms.user.model.User;
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
-    private final UserRepository userRepository;
+    private final JwtService jwtService;
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return jwt -> {
+            Claims claims = jwtService.extractClaims(jwt);
+            if (claims == null) {
+                throw new UsernameNotFoundException("Invalid token");
+            }
+
+            String email = claims.getSubject();
+            String role = claims.get("role", String.class);
+            String name = claims.get("name", String.class);
+            Long userId = claims.get("userId", Long.class);
+
+            if (email == null || role == null) {
+                throw new UsernameNotFoundException("Invalid JWT claims");
+            }
+
+            Role erole = Role.from(role)
+                    .orElseThrow(() -> new IllegalArgumentException("Не поддерживаемая роль: " + role));
+            return new User(userId, name, email, erole);
+        };
     }
 
     @Bean

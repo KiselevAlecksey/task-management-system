@@ -31,7 +31,7 @@ public class User implements UserDetails {
     @Builder.Default
     private Role role = Role.GUEST;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<Token> tokens;
 
     public User(String email, Role role) {

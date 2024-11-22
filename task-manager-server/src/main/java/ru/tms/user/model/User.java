@@ -25,7 +25,6 @@ public class User implements UserDetails {
     private Long id;
     private String name;
     private String email;
-    private String password;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
@@ -34,7 +33,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
 
-    public User(String email, Role role) {
+    public User(Long id, String name, String email, Role role) {
+        this.id = id;
+        this.name = name;
         this.email = email;
         this.role = role;
     }
@@ -46,7 +47,7 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return password;
+        return "";
     }
 
     @Override
