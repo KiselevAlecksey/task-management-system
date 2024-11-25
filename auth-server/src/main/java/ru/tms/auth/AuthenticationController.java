@@ -12,12 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import ru.tms.auth.dto.AuthenticationResponse;
 import ru.tms.auth.dto.AuthenticationRequest;
 import ru.tms.auth.dto.RegisterRequest;
-import ru.tms.config.multitenancy.TenantContext;
 import ru.tms.user.UserRestClient;
 import ru.tms.user.model.Role;
 
 import java.io.IOException;
-import java.util.Objects;
 
 @Slf4j
 @Validated
@@ -36,9 +34,6 @@ public class AuthenticationController {
         Role role = Role.from(request.getRole())
                 .orElseThrow(() -> new IllegalArgumentException("Не поддерживаемая роль: " + request.getRole()));
 
-        log.info(TenantContext.getCurrentTenant());
-        TenantContext.setCurrentTenant("auth");
-        log.info(TenantContext.getCurrentTenant());
         request.setERole(role);
         AuthenticationResponse response = authService.register(request);
 
