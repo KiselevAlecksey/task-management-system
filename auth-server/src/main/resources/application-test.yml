@@ -17,20 +17,17 @@ spring:
       enabled: true
       authorize-mode: NONE
   jpa:
+    hibernate:
+      ddl-auto: none
     show-sql: true
-    auth:
-      database-platform: org.hibernate.dialect.H2Dialect
+    properties:
       hibernate:
-        ddl-auto: none
+        format_sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
 tenants:
   datasource:
     auth:
       url: jdbc:h2:mem:auth
-      username: test
-      password: test
-      driver-class-name: org.h2.Driver
-    tms:
-      url: jdbc:h2:mem:tms
       username: test
       password: test
       driver-class-name: org.h2.Driver
