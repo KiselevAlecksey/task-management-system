@@ -1,4 +1,4 @@
-package ru.tms.user.dto;
+package ru.tms.userduplicate.dto;
 
 public record UserResponseDto(
 

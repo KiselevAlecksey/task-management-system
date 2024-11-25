@@ -14,8 +14,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.tms.auditing.ApplicationAuditAware;
-import ru.tms.user.model.Role;
-import ru.tms.user.model.User;
+import ru.tms.userduplicate.model.Role;
+import ru.tms.userduplicate.model.UserDuplicate;
 
 @Configuration
 @RequiredArgsConstructor
@@ -42,7 +42,7 @@ public class ApplicationConfig {
 
             Role erole = Role.from(role)
                     .orElseThrow(() -> new IllegalArgumentException("Не поддерживаемая роль: " + role));
-            return new User(userId, name, email, erole);
+            return new UserDuplicate(userId, name, email, erole);
         };
     }
 

@@ -1,4 +1,4 @@
-package ru.tms.user.dto;
+package ru.tms.userduplicate.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import ru.tms.user.model.Role;
+import ru.tms.userduplicate.model.Role;
 
 @Data
 @NoArgsConstructor
@@ -40,7 +40,6 @@ public class UserUpdateDto {
         this.password = password;
         this.role = role;
     }
-
 
     public boolean hasRole() {
         return isNotBlank(role);

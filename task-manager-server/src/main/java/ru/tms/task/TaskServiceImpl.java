@@ -4,11 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.tms.config.JwtService;
 import ru.tms.exception.ParameterNotValidException;
 import ru.tms.task.dto.comment.CommentCreateDto;
 import ru.tms.task.dto.comment.CommentResponseDto;
@@ -21,8 +19,8 @@ import ru.tms.task.enums.TaskStatus;
 import ru.tms.exception.NotFoundException;
 import ru.tms.task.model.Comment;
 import ru.tms.task.model.Task;
-import ru.tms.user.UserRepository;
-import ru.tms.user.model.User;
+import ru.tms.userduplicate.UserRepository;
+import ru.tms.userduplicate.model.UserDuplicate;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -40,10 +38,10 @@ public class TaskServiceImpl implements TaskService {
     public TaskResponseDto create(TaskCreateDto createDto) {
         Task task = taskMapper.toTask(createDto);
 
-        User creator = userRepository.findById(createDto.getExecutorId())
+        UserDuplicate creator = userRepository.findById(createDto.getCreatorId())
                 .orElseThrow(() -> new NotFoundException("пользователь не найден"));
 
-        User executor = userRepository.findById(createDto.getExecutorId())
+        UserDuplicate executor = userRepository.findById(createDto.getExecutorId())
                 .orElseThrow(() -> new NotFoundException("пользователь не найден"));
 
         task.getCreator().setEmail(creator.getEmail());
@@ -64,7 +62,7 @@ public class TaskServiceImpl implements TaskService {
         Task task = taskRepository.findById(updateDto.getId())
                 .orElseThrow(() -> new NotFoundException("Задача не найдена"));
 
-        User user;
+        UserDuplicate user;
         if (updateDto.getExecutorId() != null) {
             user = userRepository.findById(updateDto.getExecutorId())
                     .orElseThrow(() -> new NotFoundException("Пользователь \"исполнитель\" не найден"));
@@ -146,7 +144,7 @@ public class TaskServiceImpl implements TaskService {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new NotFoundException("Задача не найдена"));
 
-        User user = userRepository.findById(executorId)
+        UserDuplicate user = userRepository.findById(executorId)
                     .orElseThrow(() -> new NotFoundException("Пользователь \"исполнитель\" не найден"));
         task.setExecutor(user);
 
@@ -195,7 +193,7 @@ public class TaskServiceImpl implements TaskService {
         Task updated = taskRepository.findById(param.getTaskId())
                 .orElseThrow(() -> new NotFoundException("Задача не найдена"));
 
-        User user = userRepository.findById(param.getUserId())
+        UserDuplicate user = userRepository.findById(param.getUserId())
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
         if (!(updated.getExecutor().getId().equals(user.getId())
@@ -217,7 +215,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public CommentResponseDto createComment(CommentCreateDto createDto) {
-        User user = userRepository.findById(createDto.getCreatorId())
+        UserDuplicate user = userRepository.findById(createDto.getCreatorId())
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         Task task = taskRepository.findById(createDto.getTaskId())
                 .orElseThrow(() -> new NotFoundException("Задача не найдена"));

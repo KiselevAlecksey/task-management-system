@@ -93,7 +93,6 @@ public class AdminTaskController {
         TaskStatus taskStatus = null;
         TaskPriority taskPriority = null;
 
-
         if (status != null) {
             String statusUpperCase = status.toUpperCase();
             taskStatus = TaskStatus.from(statusUpperCase)

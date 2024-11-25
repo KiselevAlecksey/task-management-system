@@ -11,9 +11,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.tms.config.JwtService;
-import ru.tms.dto.AuthenticationRequest;
-import ru.tms.dto.AuthenticationResponse;
-import ru.tms.dto.RegisterRequest;
+import ru.tms.auth.dto.AuthenticationRequest;
+import ru.tms.auth.dto.AuthenticationResponse;
+import ru.tms.auth.dto.RegisterRequest;
 import ru.tms.exception.NotFoundException;
 import ru.tms.token.Token;
 import ru.tms.token.TokenRepository;
@@ -45,6 +45,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, jwtToken, refreshToken);
         return AuthenticationResponse.builder()
+                .userId(savedUser.getId())
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();

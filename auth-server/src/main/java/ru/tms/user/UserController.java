@@ -6,18 +6,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientException;
-import ru.tms.exception.NotFoundException;
+import ru.tms.config.multitenancy.TenantContext;
 import ru.tms.user.dto.UserCreateDto;
 import ru.tms.user.dto.UserResponseDto;
 import ru.tms.user.dto.UserUpdateDto;
 import ru.tms.user.model.Role;
 
 import java.util.List;
-import java.util.concurrent.TimeoutException;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static ru.tms.user.Constant.TOKEN_BEARER;
 
 @Slf4j
 @Validated
@@ -26,7 +22,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @PreAuthorize("hasRole('ADMIN')")
 @RequestMapping(path = "/users")
 public class UserController {
-    private final String TOKEN_BEARER = "Authorization";
+    private final UserRestClient restClient;
     private final UserService userService;
 
     @GetMapping
@@ -50,40 +46,26 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('admin:create')")
-    public UserResponseDto create(@RequestHeader(TOKEN_BEARER) String token, @RequestBody @Validated UserCreateDto userRequest) {
+    public UserResponseDto create(@RequestHeader(TOKEN_BEARER) String token,
+                                  @RequestBody @Validated UserCreateDto userRequest) {
         log.info("==> Create user is {} start", userRequest.getEmail());
         if (userRequest.getRole() != null) {
             Role role = Role.from(userRequest.getRole().toUpperCase())
-                    .orElseThrow(() -> new IllegalArgumentException("Не поддерживаемая роль: " + userRequest.getRole()));
+                    .orElseThrow(() -> new IllegalArgumentException("Не поддерживаемая роль: "
+                            + userRequest.getRole()));
             userRequest.setERole(role);
         }
         UserResponseDto created = userService.create(userRequest);
         log.info("<== Created user is {} complete", userRequest.getEmail());
-
         userRequest.setId(created.id());
-
-        RestClient client = RestClient.create("http://localhost:8080");
-        log.info("==> Create user is {} to task-manager-server start", userRequest.getEmail());
-        try {
-            UserResponseDto userResponseDto = client.post().uri("/users").contentType(APPLICATION_JSON)
-                    .header(TOKEN_BEARER, token)
-                    .body(userRequest)
-                    .retrieve()
-                    .onStatus(status -> status.value() == 404, (request, response) -> {
-                        throw new NotFoundException("User not created");
-                    })
-                    .body(UserResponseDto.class);
-        } catch (RestClientException e) {
-            log.info("==> Ошибка запроса к серверу: " + e.getMessage(), userRequest.getEmail());
-        }
-
-        log.info("<== Created user is {} to task-manager-server end", userRequest.getEmail());
+        restClient.create(userRequest, token);
         return created;
     }
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasAuthority('admin:update')")
-    public UserResponseDto update(@RequestBody @Validated UserUpdateDto userRequest, @PathVariable long id) {
+    public UserResponseDto update(@RequestHeader(TOKEN_BEARER) String token,
+                                  @RequestBody @Validated UserUpdateDto userRequest, @PathVariable long id) {
         log.info("==> Update user is id {} start", id);
         if (userRequest.getRole() != null) {
             Role role = Role.from(userRequest.getRole().toUpperCase())
@@ -93,16 +75,18 @@ public class UserController {
         userRequest.setId(id);
         UserResponseDto updated = userService.update(userRequest);
         log.info("<== Updated user is id {} complete", id);
+        restClient.update(userRequest, token);
         return updated;
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('admin:delete')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void userRemove(@PathVariable long id) {
+    public void userRemove(@RequestHeader(TOKEN_BEARER) String token, @PathVariable long id) {
         log.info("==> Users remove user id {} start", id);
         userService.remove(id);
         log.info("<== Users remove user id {} complete", id);
+        restClient.remove(id, token);
     }
 
 }
