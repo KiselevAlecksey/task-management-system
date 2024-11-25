@@ -20,10 +20,11 @@ public class Token {
     @Column(unique = true)
     public String token;
 
-    @Column(unique = true)
+    @Column(name = "refresh_token", unique = true)
     public String refreshToken;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "token_type")
     public TokenType tokenType = TokenType.BEARER;
 
     public boolean revoked;

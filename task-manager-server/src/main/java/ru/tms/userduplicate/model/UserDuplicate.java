@@ -1,27 +1,23 @@
-package ru.tms.user.model;
+package ru.tms.userduplicate.model;
 
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.tms.token.Token;
 
 import java.util.Collection;
-import java.util.List;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users_tasks")
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class User implements UserDetails {
+public class UserDuplicate implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String email;
@@ -30,10 +26,7 @@ public class User implements UserDetails {
     @Builder.Default
     private Role role = Role.GUEST;
 
-    @OneToMany(mappedBy = "user")
-    private List<Token> tokens;
-
-    public User(Long id, String name, String email, Role role) {
+    public UserDuplicate(Long id, String name, String email, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;

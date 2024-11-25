@@ -16,22 +16,12 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.tms.TaskManagerServer;
-import ru.tms.auth.AuthenticationService;
 import ru.tms.config.JwtAuthenticationFilter;
 import ru.tms.config.JwtService;
 import ru.tms.config.SecurityConfig;
-import ru.tms.dto.AuthenticationResponse;
-import ru.tms.dto.RegisterRequest;
 import ru.tms.task.TaskService;
 import ru.tms.token.TokenRepository;
-import ru.tms.user.UserService;
-import ru.tms.user.model.User;
-
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
-import static ru.tms.utils.TestData.*;
+import ru.tms.userduplicate.UserService;
 
 @WebMvcTest(AdminTaskController.class)
 @AutoConfigureMockMvc
@@ -53,9 +43,6 @@ class TaskControllerTest {
 
     @MockBean
     private LogoutHandler logoutHandler;
-
-    @MockBean
-    private AuthenticationService authenticationService;
 
     @MockBean
     private PasswordEncoder passwordEncoder;
@@ -91,23 +78,6 @@ class TaskControllerTest {
     }
 
     private String getJwtToken() {
-        RegisterRequest request = createAdminRegisterRequest();
-        AuthenticationResponse mockResponse = new AuthenticationResponse(TOKEN_REAL, "mockRefreshToken");
-        String jwtToken = mockResponse.getAccessToken();
-        String refreshToken = mockResponse.getAccessToken();
-        var user = User.builder()
-                .name(request.getName())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(request.getERole())
-                .build();
-
-        when(userService.create(createUserDto())).thenReturn(createdUserDto());
-        when(jwtService.generateToken(user)).thenReturn(jwtToken);
-        when(jwtService.extractUsername(jwtToken)).thenReturn(request.getEmail());
-        when(jwtService.isTokenValid(jwtToken, user)).thenReturn(true);
-        when(userDetailsService.loadUserByUsername(jwtToken)).thenReturn(user);
-        when(tokenRepository.findByToken(jwtToken)).thenReturn(Optional.of(createToken(jwtToken, refreshToken)));
         return jwtToken;
     }
 }

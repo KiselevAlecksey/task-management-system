@@ -15,9 +15,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.tms.config.JwtAuthenticationFilter;
 import ru.tms.config.JwtService;
-import ru.tms.dto.AuthenticationRequest;
-import ru.tms.dto.AuthenticationResponse;
-import ru.tms.dto.RegisterRequest;
+import ru.tms.auth.dto.AuthenticationRequest;
+import ru.tms.auth.dto.AuthenticationResponse;
+import ru.tms.auth.dto.RegisterRequest;
+import ru.tms.user.UserRestClient;
 
 import java.nio.charset.StandardCharsets;
 
@@ -34,6 +35,9 @@ import static ru.tms.utils.TestData.createRegisterRequest;
 @DisplayName("AuthenticationController")
 @ContextConfiguration
 class AuthenticationControllerTest {
+
+    @MockBean
+    private UserRestClient restClient;
 
     @MockBean
     private AuthenticationService authenticationService;
@@ -53,8 +57,9 @@ class AuthenticationControllerTest {
     @DisplayName("Должен вернуть токены нового пользователя")
     void should_return_authentication_response_on_successful_registration() {
         RegisterRequest request = createRegisterRequest();
+        AuthenticationResponse mockResponse = new AuthenticationResponse(
+                request.getId(), "mockAccessToken", "mockRefreshToken");
 
-        AuthenticationResponse mockResponse = new AuthenticationResponse("mockAccessToken", "mockRefreshToken");
         when(authenticationService.register(request)).thenReturn(mockResponse);
 
         AuthenticationResponse response = authenticationService.register(request);
@@ -67,9 +72,10 @@ class AuthenticationControllerTest {
     @Test
     @DisplayName("Должен зарегистрировать нового пользователя")
     void should_register_new_user() throws Exception {
-        AuthenticationResponse mockResponse = new AuthenticationResponse("mockAccessToken", "mockRefreshToken");
-
         RegisterRequest request = createRegisterRequest();
+        AuthenticationResponse mockResponse = new AuthenticationResponse(
+                request.getId(), "mockAccessToken", "mockRefreshToken");
+
         when(authenticationService.register(createRegisterRequest())).thenReturn(mockResponse);
 
         mockMvc.perform(post("/api/v1/auth/register")
@@ -88,9 +94,10 @@ class AuthenticationControllerTest {
     @Test
     @DisplayName("Должен аутентифицировать существующего пользователя")
     void should_authenticate_existing_user() throws Exception {
+        AuthenticationRequest request = new AuthenticationRequest();
         AuthenticationResponse mockResponse = new AuthenticationResponse("mockAccessToken", "mockRefreshToken");
 
-        AuthenticationRequest request = new AuthenticationRequest();
+
         request.setEmail("test@example.com");
         request.setPassword("password123");
 

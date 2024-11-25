@@ -1,6 +1,5 @@
 package ru.tms.config;
 
-import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
@@ -36,12 +35,12 @@ public class JpaConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(JpaVendorAdapter jpaVendorAdapter) {
         LocalContainerEntityManagerFactoryBean entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactory.setDataSource(dataSource);
-        entityManagerFactory.setPackagesToScan("ru.tms"); // Замените на ваши пакеты
+        entityManagerFactory.setPackagesToScan("ru.tms");
         entityManagerFactory.setJpaVendorAdapter(jpaVendorAdapter);
         entityManagerFactory.setPersistenceProviderClass(HibernatePersistenceProvider.class);
 
         Properties hibernateProperties = new Properties();
-        hibernateProperties.putAll(jpaProperties.getProperties()); // Добавляем существующие свойства
+        hibernateProperties.putAll(jpaProperties.getProperties());
         hibernateProperties.setProperty("hibernate.multiTenancy", "DATABASE");
         hibernateProperties.setProperty("hibernate.tenant_identifier_value", "#{tenantContext.getCurrentTenant}");
 

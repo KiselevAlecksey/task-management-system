@@ -1,25 +1,6 @@
 server:
   port: 9090
-spring:
-  sql:
-    init:
-      mode: always
-  datasource:
-    url: jdbc:h2:mem:tms
-    username: auth-test
-    password: auth-test
-    driver-class-name: org.h2.Driver
-  h2:
-    console:
-      enabled: true
-  jpa:
-    hibernate:
-      ddl-auto: none
-    show-sql: false
-    properties:
-      hibernate:
-        format_sql: true
-    database-platform: org.hibernate.dialect.H2Dialect
+
 
 application:
   security:

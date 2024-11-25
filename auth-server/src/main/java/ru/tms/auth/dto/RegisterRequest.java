@@ -1,13 +1,11 @@
-package ru.tms.dto;
+package ru.tms.auth.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 import ru.tms.user.model.Role;
 
 @Data
@@ -15,20 +13,23 @@ import ru.tms.user.model.Role;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RegisterRequest {
 
+    Long id;
+
     @NotBlank
-    private String name;
+    String name;
 
     @NotBlank
     @Email
-    private String email;
+    String email;
 
     @NotBlank
-    private String password;
+    String password;
 
-    private String role;
+    String role;
 
     @Hidden
-    private Role eRole;
+    Role eRole;
 }

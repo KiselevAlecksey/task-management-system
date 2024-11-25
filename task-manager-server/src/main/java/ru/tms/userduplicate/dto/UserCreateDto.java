@@ -1,14 +1,15 @@
-package ru.tms.user.dto;
+package ru.tms.userduplicate.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import ru.tms.user.model.Role;
+import ru.tms.userduplicate.model.Role;
 
 @Data
 @NoArgsConstructor
@@ -17,7 +18,7 @@ import ru.tms.user.model.Role;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserCreateDto {
 
-    @NotBlank
+    @NotNull
     Long id;
 
     @NotBlank

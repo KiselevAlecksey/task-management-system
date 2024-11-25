@@ -1,4 +1,4 @@
-package ru.tms.dto;
+package ru.tms.auth.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -12,9 +12,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AuthenticationResponse {
 
+    private Long userId;
+
     @JsonProperty("access_token")
     private String accessToken;
 
     @JsonProperty("refresh_token")
     private String refreshToken;
+
+    public AuthenticationResponse(String accessToken, String refreshToken) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+    }
 }

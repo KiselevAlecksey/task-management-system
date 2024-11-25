@@ -1,4 +1,4 @@
-package ru.tms.user;
+package ru.tms.userduplicate;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,16 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClient;
-import ru.tms.exception.NotFoundException;
-import ru.tms.user.dto.UserCreateDto;
-import ru.tms.user.dto.UserResponseDto;
-import ru.tms.user.dto.UserUpdateDto;
-import ru.tms.user.model.Role;
-
-import java.util.List;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON;
+import ru.tms.config.multitenancy.TenantContext;
+import ru.tms.userduplicate.dto.UserCreateDto;
+import ru.tms.userduplicate.dto.UserResponseDto;
+import ru.tms.userduplicate.dto.UserUpdateDto;
+import ru.tms.userduplicate.model.Role;
 
 @Slf4j
 @Validated
@@ -24,31 +19,15 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @RequestMapping(path = "/users")
 @PreAuthorize("hasRole('ADMIN')")
 public class UserController {
-    private final String TOKEN_BEARER = "Authorization";
     private final UserService userService;
-
-    @GetMapping
-    @PreAuthorize("hasAuthority('admin:read')")
-    public List<UserResponseDto> findAll() {
-        log.info("==> Users get all start");
-        List<UserResponseDto> list = userService.findAll();
-        log.info("<== Users get all complete");
-        return list;
-    }
-
-    @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('admin:read')")
-    public UserResponseDto getById(@PathVariable long id) {
-        log.info("==> User get {} start", id);
-        UserResponseDto user = userService.getById(id);
-        log.info("<== User get {} complete", id);
-        return user;
-    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('admin:create')")
     public UserResponseDto create(@RequestBody @Validated UserCreateDto userRequest) {
+        log.info("Handling incoming API request");
+        TenantContext.setCurrentTenant("tms");
+        log.info(TenantContext.getCurrentTenant());
         log.info("==> Create user is {} start", userRequest.getEmail());
         if (userRequest.getRole() != null) {
             Role role = Role.from(userRequest.getRole().toUpperCase())

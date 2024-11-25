@@ -1,4 +1,4 @@
-package ru.tms.user.model;
+package ru.tms.userduplicate.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -10,8 +10,8 @@ public enum Permission {
     ADMIN_UPDATE("admin:update"),
     ADMIN_CREATE("admin:create"),
     ADMIN_DELETE("admin:delete"),
-    USER_READ("management:read"),
-    USER_UPDATE("management:update"),
+    USER_READ("user:read"),
+    USER_UPDATE("user:update"),
     USER_CREATE("user:create");
 
     private final String permission;
