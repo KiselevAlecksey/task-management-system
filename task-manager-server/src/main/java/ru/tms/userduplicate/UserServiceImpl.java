@@ -1,23 +1,20 @@
-package ru.tms.user;
+package ru.tms.userduplicate;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.tms.config.multitenancy.TenantContext;
 import ru.tms.exception.NotFoundException;
 import ru.tms.exception.ParameterConflictException;
-import ru.tms.user.dto.UserCreateDto;
-import ru.tms.user.dto.UserResponseDto;
-import ru.tms.user.dto.UserUpdateDto;
-import ru.tms.user.mapper.UserMapper;
-import ru.tms.user.model.User;
+import ru.tms.userduplicate.dto.UserCreateDto;
+import ru.tms.userduplicate.dto.UserResponseDto;
+import ru.tms.userduplicate.dto.UserUpdateDto;
+import ru.tms.userduplicate.mapper.UserMapper;
+import ru.tms.userduplicate.model.UserDuplicate;
 
-import java.security.Principal;
-import java.util.List;
-
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -27,27 +24,14 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
-    public List<UserResponseDto> findAll() {
-
-        return userRepository.findAll().stream().map(userMapper::mapToUserDto).toList();
-    }
-
-    @Override
-    public UserResponseDto getById(long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-
-        return userMapper.mapToUserDto(user);
-    }
-
-    @Override
     public UserResponseDto create(UserCreateDto userRequest) {
 
-        User user = userMapper.mapToUser(userRequest);
-
+        UserDuplicate user = userMapper.mapToUser(userRequest);
+        TenantContext.setCurrentTenant("tms");
+        log.info(TenantContext.getCurrentTenant());
         checkEmailConflict(user.getEmail());
 
-        User userCreated = userRepository.save(user);
+        UserDuplicate userCreated = userRepository.save(user);
 
         return userMapper.mapToUserDto(userCreated);
     }
@@ -56,7 +40,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponseDto update(UserUpdateDto userRequest) {
 
-        User userUpdated = userRepository.findById(userRequest.getId())
+        UserDuplicate userUpdated = userRepository.findById(userRequest.getId())
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         if (!(userUpdated.getEmail().equals(userRequest.getEmail()))) {
             checkEmailConflict(userMapper.mapToUser(userRequest).getEmail());
@@ -64,7 +48,7 @@ public class UserServiceImpl implements UserService {
 
         userMapper.updateUserFields(userUpdated, userRequest);
 
-        User user = userRepository.save(userUpdated);
+        UserDuplicate user = userRepository.save(userUpdated);
 
         return userMapper.mapToUserDto(user);
     }
@@ -77,9 +61,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     private void checkEmailConflict(String email) {
-        UserEmail userEmails = userRepository.findByEmailContainingIgnoreCase(email);
-
-        if (userEmails != null && userEmails.getEmail().equals(email)) {
+        if (userRepository.existsByEmailContainingIgnoreCase(email)) {
             throw new ParameterConflictException("email", "Тайкой email уже занят");
         }
     }

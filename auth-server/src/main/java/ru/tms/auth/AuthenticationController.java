@@ -9,12 +9,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.tms.dto.AuthenticationResponse;
-import ru.tms.dto.AuthenticationRequest;
-import ru.tms.dto.RegisterRequest;
+import ru.tms.auth.dto.AuthenticationResponse;
+import ru.tms.auth.dto.AuthenticationRequest;
+import ru.tms.auth.dto.RegisterRequest;
+import ru.tms.config.multitenancy.TenantContext;
+import ru.tms.user.UserRestClient;
 import ru.tms.user.model.Role;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @Slf4j
 @Validated
@@ -23,22 +26,30 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Tag(name = "Authentication")
 public class AuthenticationController {
-
+    private final UserRestClient restClient;
     private final AuthenticationService authService;
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<AuthenticationResponse> register(@RequestBody @Validated RegisterRequest request) {
-        log.info("Create new user: {}", request);
+        log.info("Create new user: {}", request.getEmail());
         Role role = Role.from(request.getRole())
                 .orElseThrow(() -> new IllegalArgumentException("Не поддерживаемая роль: " + request.getRole()));
 
+        log.info(TenantContext.getCurrentTenant());
+        TenantContext.setCurrentTenant("auth");
+        log.info(TenantContext.getCurrentTenant());
         request.setERole(role);
+        AuthenticationResponse response = authService.register(request);
 
-        ResponseEntity<AuthenticationResponse> response = ResponseEntity.status(HttpStatus.CREATED)
-                .body(authService.register(request));
-        log.info("Response from service: {}", response);
-        return response;
+        log.info("Response from service: {}", response.getUserId());
+
+        request.setId(response.getUserId());
+        String jwt = "Bearer " + response.getAccessToken();
+
+        restClient.register(request, jwt);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/authenticate")

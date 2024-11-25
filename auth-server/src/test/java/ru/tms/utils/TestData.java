@@ -1,8 +1,8 @@
 package ru.tms.utils;
 
 import lombok.NoArgsConstructor;
-import ru.tms.dto.AuthenticationRequest;
-import ru.tms.dto.RegisterRequest;
+import ru.tms.auth.dto.AuthenticationRequest;
+import ru.tms.auth.dto.RegisterRequest;
 import ru.tms.token.Token;
 import ru.tms.token.TokenType;
 import ru.tms.user.dto.UserCreateDto;
@@ -56,15 +56,15 @@ public class TestData {
     }
 
     public static UserCreateDto createUserDto() {
-        return new UserCreateDto("Иван Иванов2", "ivan2@example.com", PASS, null);
+        return new UserCreateDto(TEST_USER_ID, "Иван Иванов2", "ivan2@example.com", PASS, null);
     }
 
     public static UserCreateDto createUserDto(String name, String description) {
-        return new UserCreateDto(name, description, PASS, ROLE_USER);
+        return new UserCreateDto(TEST_USER_ID, name, description, PASS, ROLE_USER);
     }
 
     public static UserCreateDto createUserDto(String name, String email, String pass, String role) {
-        return new UserCreateDto(name, email, pass, role);
+        return new UserCreateDto(TEST_USER_ID, name, email, pass, role);
     }
 
     public static UserResponseDto createdUserDto(Long userId, String name, String description) {
@@ -115,11 +115,11 @@ public class TestData {
     // authentication
 
     public static RegisterRequest createRegisterRequest() {
-        return new RegisterRequest("Иван Иванов1", "ivan1@example.com", PASS, ROLE_USER, Role.USER);
+        return new RegisterRequest(TEST_USER_ID, "Иван Иванов1", "ivan1@example.com", PASS, ROLE_USER, Role.USER);
     }
 
     public static RegisterRequest createAdminRegisterRequest() {
-        return new RegisterRequest("Иван Иванов", "ivan@example.com", PASS, "ADMIN", Role.ADMIN);
+        return new RegisterRequest(TEST_USER_ID, "Иван Иванов", "ivan@example.com", PASS, "ADMIN", Role.ADMIN);
     }
 
     public static Token createToken(String token, String refreshToken) {

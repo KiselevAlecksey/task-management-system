@@ -17,19 +17,17 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.tms.TaskManagerServer;
-import ru.tms.auth.AuthenticationService;
 import ru.tms.config.JwtAuthenticationFilter;
 import ru.tms.config.JwtService;
 import ru.tms.config.SecurityConfig;
-import ru.tms.dto.AuthenticationResponse;
-import ru.tms.dto.RegisterRequest;
 import ru.tms.task.TaskService;
 import ru.tms.task.dto.param.AdminStatusAndPriorityParam;
 import ru.tms.task.enums.TaskPriority;
 import ru.tms.task.enums.TaskStatus;
 import ru.tms.token.TokenRepository;
-import ru.tms.user.UserService;
-import ru.tms.user.model.User;
+import ru.tms.userduplicate.UserService;
+import ru.tms.userduplicate.dto.UserCreateDto;
+import ru.tms.userduplicate.model.UserDuplicate;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -61,9 +59,6 @@ class AdminTaskControllerTest {
 
     @MockBean
     private LogoutHandler logoutHandler;
-
-    @MockBean
-    private AuthenticationService authenticationService;
 
     @MockBean
     private PasswordEncoder passwordEncoder;
@@ -143,10 +138,7 @@ class AdminTaskControllerTest {
         mockMvc.perform(patch("/admin/tasks/{taskId}/assign/{executorId}", TEST_ID_ONE, TEST_USER2_ID)
                         .header(USER_ID_HEADER, TEST_USER_ID)
                         .header("Authorization", "Bearer " + jwtToken)
-                        .content(mapper.writeValueAsString(updateTaskDto()))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+                        .content(mapper.writeValueAsString(updateTaskDto())))
                 .andExpect(status().isOk())
                 .andDo(print());
 
@@ -165,9 +157,7 @@ class AdminTaskControllerTest {
                         .header("Authorization", "Bearer " + jwtToken)
                         .param("status", "NO_STATUS")
                         .param("priority", "MAJOR")
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+                        .characterEncoding(StandardCharsets.UTF_8))
                 .andExpect(status().isOk())
                 .andDo(print());
 
@@ -175,23 +165,22 @@ class AdminTaskControllerTest {
     }
 
     private String getJwtToken() {
-        RegisterRequest request = createAdminRegisterRequest();
-        AuthenticationResponse mockResponse = new AuthenticationResponse(TOKEN_REAL, "mockRefreshToken");
-        String jwtToken = mockResponse.getAccessToken();
-        String refreshToken = mockResponse.getAccessToken();
-        var user = User.builder()
+        UserCreateDto request = createAdminUserCreateDto();
+        String jwtToken = TOKEN_ADMIN;
+        UserDuplicate user = UserDuplicate.builder()
+                .id(request.getId())
                 .name(request.getName())
                 .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getERole())
                 .build();
 
         when(userService.create(createUserDto())).thenReturn(createdUserDto());
         when(jwtService.generateToken(user)).thenReturn(jwtToken);
         when(jwtService.extractUsername(jwtToken)).thenReturn(request.getEmail());
+        when(jwtService.extractUser(jwtToken)).thenReturn(user);
         when(jwtService.isTokenValid(jwtToken, user)).thenReturn(true);
         when(userDetailsService.loadUserByUsername(jwtToken)).thenReturn(user);
-        when(tokenRepository.findByToken(jwtToken)).thenReturn(Optional.of(createToken(jwtToken, refreshToken)));
+        when(tokenRepository.findByToken(jwtToken)).thenReturn(Optional.of(createToken(jwtToken, "mockRefreshToken")));
         return jwtToken;
     }
 }

@@ -1,4 +1,8 @@
+server:
+  port: 8080
 spring:
+  main:
+    allow-bean-definition-overriding: true
   h2:
     console:
       enabled: true
@@ -10,16 +14,29 @@ spring:
   sql:
     init:
       mode: always
+
+  security:
+    basic:
+      enabled: true
+      authorize-mode: NONE
   jpa:
-    properties:
-      hibernate:
-        format_sql: true
     show-sql: true
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: none
+    tms:
+      database-platform: org.hibernate.dialect.H2Dialect
+      hibernate:
+        ddl-auto: none
+
+tenants:
   datasource:
-    url: jdbc:h2:mem:tms
-    username: test
-    password: test
-    driver-class-name: org.h2.Driver
+    tms:
+      url: jdbc:h2:mem:tms
+      username: test
+      password: test
+      driver-class-name: org.h2.Driver
+application:
+  security:
+    jwt:
+      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      expiration: 86400000 # a day
+      refresh-token:
+        expiration: 604800000 # 7 days

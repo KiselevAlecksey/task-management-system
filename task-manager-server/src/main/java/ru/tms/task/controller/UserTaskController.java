@@ -21,7 +21,7 @@ public class UserTaskController {
     private final TaskService taskService;
 
     @PatchMapping("/{taskId}/status")
-    @PreAuthorize("hasAuthority('user:read')")
+    @PreAuthorize("hasAuthority('user:update')")
     public TaskResponseDto changeStatus(@RequestHeader(USER_ID_HEADER) long userId,
             @RequestParam(required = false) String status, @PathVariable long taskId) {
         log.info("==> Change status {} start", status);

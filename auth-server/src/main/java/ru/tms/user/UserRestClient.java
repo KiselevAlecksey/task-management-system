@@ -18,24 +18,24 @@ public class UserRestClient {
 
     RestClient client = RestClient.create("http://localhost:8080");
 
-    public void register(UserCreateDto createDto, String token) {
+    public void register(RegisterRequest registerDto, String token) {
         try {
-            log.info("==> Register user is {} to task-manager-server start", createDto.getEmail());
+            log.info("==> Register user is {} to task-manager-server start", registerDto.getEmail());
             client
                     .post()
                     .uri("/users")
                     .header(TOKEN_BEARER, token)
                     .contentType(APPLICATION_JSON)
-                    .body(createDto)
+                    .body(registerDto)
                     .retrieve()
                     .onStatus(status -> status.value() == 404, (request, response) -> {
                         throw new NotFoundException("User not created");
                     })
                     .body(UserResponseDto.class);
-            log.info("<== Register user is {} to task-manager-server end", createDto.getEmail());
+            log.info("<== Register user is {} to task-manager-server end", registerDto.getEmail());
         } catch (
                 RestClientException e) {
-            log.info("==> Ошибка запроса к серверу: " + e.getMessage(), createDto.getEmail());
+            log.info("==> Ошибка запроса к серверу: " + e.getMessage(), registerDto.getEmail());
         }
     }
 

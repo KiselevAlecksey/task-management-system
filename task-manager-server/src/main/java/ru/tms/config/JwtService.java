@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.tms.user.UserRepository;
-import ru.tms.user.model.Role;
-import ru.tms.user.model.User;
+import ru.tms.userduplicate.UserRepository;
+import ru.tms.userduplicate.model.Role;
+import ru.tms.userduplicate.model.UserDuplicate;
 
 import java.security.Key;
 import java.util.Date;
@@ -65,7 +65,7 @@ public class JwtService {
             Role erole = Role.from(role)
                     .orElseThrow(() -> new IllegalArgumentException("Не поддерживаемая роль: " + role));
 
-            User user = new User(userId, name, email, erole);
+            UserDuplicate user = new UserDuplicate(userId, name, email, erole);
 
             userRepository.save(user);
 

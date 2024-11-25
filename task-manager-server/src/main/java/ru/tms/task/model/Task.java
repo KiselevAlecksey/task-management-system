@@ -5,7 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.tms.task.enums.TaskPriority;
 import ru.tms.task.enums.TaskStatus;
-import ru.tms.user.model.User;
+import ru.tms.userduplicate.model.UserDuplicate;
 
 import java.time.LocalDateTime;
 
@@ -42,11 +42,11 @@ public class Task {
     // проверить какой тип загрузки использовать
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id", nullable = false)
-    User creator;
+    UserDuplicate creator;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "executor_id", nullable = false)
-    User executor;
+    UserDuplicate executor;
 
     @Column(name = "created_date", nullable = false)
     LocalDateTime created;

@@ -1,4 +1,4 @@
-package ru.tms.user;
+package ru.tms.userduplicate;
 
 public interface UserEmail {
     String getEmail();

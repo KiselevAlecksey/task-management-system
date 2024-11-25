@@ -16,12 +16,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.tms.SecurityApplication;
 import ru.tms.auth.AuthenticationService;
 import ru.tms.config.JwtAuthenticationFilter;
 import ru.tms.config.JwtService;
 import ru.tms.config.SecurityConfig;
-import ru.tms.dto.AuthenticationResponse;
-import ru.tms.dto.RegisterRequest;
+import ru.tms.auth.dto.AuthenticationResponse;
+import ru.tms.auth.dto.RegisterRequest;
 import ru.tms.token.TokenRepository;
 import ru.tms.user.model.User;
 
@@ -36,10 +37,13 @@ import static ru.tms.utils.TestData.*;
 
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc
-@ContextConfiguration
+@ContextConfiguration(classes = {SecurityApplication.class})
 @DisplayName("UserController")
 @Import({SecurityConfig.class, JwtAuthenticationFilter.class})
 class UserControllerTest {
+
+    @MockBean
+    private UserRestClient restClient;
 
     @MockBean
     private UserRepository userRepository;
@@ -111,6 +115,8 @@ class UserControllerTest {
     @Test
     @DisplayName("Должен создать пользователя")
     void should_create_user() throws Exception {
+
+        when(userService.create(createUserDto())).thenReturn(createdUserDto());
 
         mockMvc.perform(post("/users")
                         .header("Authorization", "Bearer " + jwtToken)

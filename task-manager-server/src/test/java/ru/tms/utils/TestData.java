@@ -1,7 +1,6 @@
 package ru.tms.utils;
 
 import lombok.NoArgsConstructor;
-import ru.tms.dto.RegisterRequest;
 import ru.tms.task.dto.comment.CommentCreateDto;
 import ru.tms.task.dto.comment.CommentResponseDto;
 import ru.tms.task.dto.param.AdminStatusAndPriorityParam;
@@ -13,11 +12,11 @@ import ru.tms.task.enums.TaskPriority;
 import ru.tms.task.enums.TaskStatus;
 import ru.tms.token.Token;
 import ru.tms.token.TokenType;
-import ru.tms.user.dto.UserCreateDto;
-import ru.tms.user.dto.UserResponseDto;
-import ru.tms.user.dto.UserUpdateDto;
-import ru.tms.user.model.Role;
-import ru.tms.user.model.User;
+import ru.tms.userduplicate.dto.UserCreateDto;
+import ru.tms.userduplicate.dto.UserResponseDto;
+import ru.tms.userduplicate.dto.UserUpdateDto;
+import ru.tms.userduplicate.model.Role;
+import ru.tms.userduplicate.model.UserDuplicate;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -56,10 +55,15 @@ public class TestData {
     public static final String ROLE_USER = "USER";
     public static final Role EROLE_USER = Role.USER;
     public static final String TOKEN = "mockAccessToken";
-    public static final String TOKEN_REAL = "eyJhbGciOiJIUzI1NiJ9" +
+    public static final String TOKEN_ADMIN = "eyJhbGciOiJIUzI1NiJ9" +
             ".eyJyb2xlIjoiUk9MRV9VU0VSIiwic3ViIjoiaXZhbjFAZXhhbX" +
             "BsZS5jb20iLCJpYXQiOjE3MzIwNTc1MjEsImV4cCI6MTczMjE0MzkyMX0" +
             ".OzM7xnNCWN1ZoL7MWhKF5cP09EImjeaCiAIEl8bCOOc";
+    public static final String TOKEN_USER = "eyJhbGciOiJIUzI1NiJ9" +
+            ".eyJyb2xlIjoiVVNFUiIsIm5hbWUiOiJVc2VyIiwidXNlcklkIjoxLCJzd" +
+            "WIiOiJ1c2VyQG1haWwuY29tIiwiaWF0IjoxNzMyMzc2MzQxLCJleHAiOjE" +
+            "3MzI0NjI3NDF9.jRUDeiIqspxGZUjSFbj_n8QHgdpQg2sNNdwGxCElGJM";
+
 
     public static final String USER_ID_HEADER = "X-TaskManager-User-Id";
     public static final String TITLE = "Implement feature B";
@@ -69,20 +73,20 @@ public class TestData {
     public static final String MAJOR = "MAJOR";
     public static final String BLOCKER = "BLOCKER";
 
-    public static User createUser() {
-        return new User(TEST_USER_ID, "Иван Иванов", "ivan@example.com", PASS, EROLE_USER, TOKENS);
+    public static UserDuplicate createUser() {
+        return new UserDuplicate(TEST_USER_ID, "Иван Иванов", "ivan@example.com", EROLE_USER);
     }
 
     public static UserCreateDto createUserDto() {
-        return new UserCreateDto("Иван Иванов2", "ivan2@example.com", PASS, null);
+        return new UserCreateDto(TEST_USER_ID, "Иван Иванов2", "ivan2@example.com", PASS, null);
     }
 
     public static UserCreateDto createUserDto(String name, String description) {
-        return new UserCreateDto(name, description, PASS, ROLE_USER);
+        return new UserCreateDto(TEST_USER_ID, name, description, ROLE_USER, EROLE_USER);
     }
 
-    public static UserCreateDto createUserDto(String name, String email, String pass, String role) {
-        return new UserCreateDto(name, email, pass, role);
+    public static UserCreateDto createUserDto(String name, String email, String role, Role eRole) {
+        return new UserCreateDto(TEST_USER_ID, name, email, role, eRole);
     }
 
     public static UserResponseDto createdUserDto(Long userId, String name, String description) {
@@ -136,12 +140,12 @@ public class TestData {
 
     // authentication
 
-    public static RegisterRequest createRegisterRequest() {
-        return new RegisterRequest("Иван Иванов1", "ivan1@example.com", PASS, ROLE_USER, Role.USER);
+    public static UserCreateDto createUserCreateDto() {
+        return new UserCreateDto(TEST_USER_ID, "Иван Иванов2", "ivan2@example.com", PASS, Role.USER);
     }
 
-    public static RegisterRequest createAdminRegisterRequest() {
-        return new RegisterRequest("Иван Иванов", "ivan@example.com", PASS, "ADMIN", Role.ADMIN);
+    public static UserCreateDto createAdminUserCreateDto() {
+        return new UserCreateDto(TEST_USER_ID, "Иван Иванов2", "ivan2@example.com", PASS, Role.ADMIN);
     }
 
     public static Token createToken(String token, String refreshToken) {
