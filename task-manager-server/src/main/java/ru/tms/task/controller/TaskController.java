@@ -13,6 +13,7 @@ import ru.tms.task.dto.task.TaskResponseDto;
 import ru.tms.task.dto.param.CommonTaskParam;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Validated
@@ -43,7 +44,7 @@ public class TaskController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyAuthority('admin:create', 'user:create')")
     public CommentResponseDto createComment(
-            @RequestHeader(USER_ID_HEADER) long userId,
+            @RequestHeader(USER_ID_HEADER) Long userId,
             @PathVariable long taskId,
             @RequestBody @Validated CommentCreateDto comment) {
         log.info("==> Comment create {} start", comment);

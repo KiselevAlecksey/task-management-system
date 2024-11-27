@@ -1,8 +1,8 @@
-package ru.tms.userduplicate.dto;
+package ru.tms.user.dto;
 
 public record UserResponseDto(
 
-        long id,
+        Long id,
 
         String name,
 

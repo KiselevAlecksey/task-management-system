@@ -3,7 +3,7 @@ package ru.tms.task.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import ru.tms.userduplicate.model.UserDuplicate;
+import ru.tms.user.model.User;
 
 import java.time.LocalDateTime;
 
@@ -30,7 +30,7 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "creator_id", nullable = false)
-    UserDuplicate creator;
+    User creator;
 
     @Column(name = "created_date", nullable = false)
     LocalDateTime created;

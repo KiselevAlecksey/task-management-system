@@ -1,4 +1,4 @@
-package ru.tms.userduplicate;
+package ru.tms.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,11 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.tms.config.multitenancy.TenantContext;
-import ru.tms.userduplicate.dto.UserCreateDto;
-import ru.tms.userduplicate.dto.UserResponseDto;
-import ru.tms.userduplicate.dto.UserUpdateDto;
-import ru.tms.userduplicate.model.Role;
+import ru.tms.user.dto.UserCreateDto;
+import ru.tms.user.dto.UserResponseDto;
+import ru.tms.user.dto.UserUpdateDto;
+import ru.tms.user.model.Role;
+
+import java.util.UUID;
 
 @Slf4j
 @Validated
@@ -26,8 +27,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('admin:create')")
     public UserResponseDto create(@RequestBody @Validated UserCreateDto userRequest) {
         log.info("Handling incoming API request");
-        TenantContext.setCurrentTenant("tms");
-        log.info(TenantContext.getCurrentTenant());
+
         log.info("==> Create user is {} start", userRequest.getEmail());
         if (userRequest.getRole() != null) {
             Role role = Role.from(userRequest.getRole().toUpperCase())
@@ -41,7 +41,7 @@ public class UserController {
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasAuthority('admin:update')")
-    public UserResponseDto update(@RequestBody @Validated UserUpdateDto userRequest, @PathVariable long id) {
+    public UserResponseDto update(@RequestBody @Validated UserUpdateDto userRequest, @PathVariable Long id) {
         log.info("==> Update user is id {} start", id);
         if (userRequest.getRole() != null) {
             Role role = Role.from(userRequest.getRole().toUpperCase())
@@ -57,7 +57,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('admin:delete')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void userRemove(@PathVariable long id) {
+    public void userRemove(@PathVariable Long id) {
         log.info("==> Users remove user id {} start", id);
         userService.remove(id);
         log.info("<== Users remove user id {} complete", id);

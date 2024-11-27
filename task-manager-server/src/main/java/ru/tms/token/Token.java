@@ -2,7 +2,7 @@ package ru.tms.token;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ru.tms.userduplicate.model.UserDuplicate;
+import ru.tms.user.model.User;
 
 @Getter
 @Setter
@@ -32,5 +32,5 @@ public class Token {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    public UserDuplicate user;
+    public User user;
 }

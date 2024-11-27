@@ -14,6 +14,8 @@ import ru.tms.task.dto.task.TaskResponseDto;
 import ru.tms.task.dto.task.TaskUpdateDto;
 import ru.tms.task.dto.param.AdminStatusAndPriorityParam;
 
+import java.util.UUID;
+
 @Slf4j
 @Validated
 @RequiredArgsConstructor
@@ -29,7 +31,7 @@ public class AdminTaskController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('admin:create')")
-    public TaskResponseDto create(@RequestHeader(USER_ID_HEADER) long creatorId,
+    public TaskResponseDto create(@RequestHeader(USER_ID_HEADER) Long creatorId,
                                   @RequestBody @Validated TaskCreateDto createDto) {
         log.info("==> Create task {} start", createDto);
         AdminStatusAndPriorityParam param = statusAndPriorityValid(createDto.getStatus(), createDto.getPriority());
@@ -69,7 +71,7 @@ public class AdminTaskController {
     @PatchMapping("/{taskId}/assign/{executorId}")
     @PreAuthorize("hasAuthority('admin:update')")
     public TaskResponseDto assignExecutor(@RequestHeader(USER_ID_HEADER) long creatorId,
-                                          @PathVariable long taskId, @PathVariable long executorId) {
+                                          @PathVariable long taskId, @PathVariable Long executorId) {
         log.info("==> Assign executor with id {} to task ID {} start", executorId, taskId);
         TaskResponseDto assigned = taskService.assignExecutor(taskId, executorId);
         log.info("<== Assigned executor to task id {} complete", taskId);

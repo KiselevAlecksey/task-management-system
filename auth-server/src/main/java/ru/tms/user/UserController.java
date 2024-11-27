@@ -19,7 +19,7 @@ import static ru.tms.user.Constant.TOKEN_BEARER;
 @RestController
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
-@RequestMapping(path = "/users")
+@RequestMapping(path = "/auth/users")
 public class UserController {
     private final UserRestClient restClient;
     private final UserService userService;

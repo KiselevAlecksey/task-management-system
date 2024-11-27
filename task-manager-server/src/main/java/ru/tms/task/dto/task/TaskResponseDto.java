@@ -6,7 +6,7 @@ import lombok.experimental.FieldDefaults;
 import ru.tms.task.dto.comment.CommentResponseDto;
 import ru.tms.task.enums.TaskPriority;
 import ru.tms.task.enums.TaskStatus;
-import ru.tms.userduplicate.dto.UserResponseDto;
+import ru.tms.user.dto.UserResponseDto;
 
 import java.util.List;
 

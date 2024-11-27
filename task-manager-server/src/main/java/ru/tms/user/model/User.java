@@ -1,4 +1,4 @@
-package ru.tms.userduplicate.model;
+package ru.tms.user.model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,15 +9,17 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 
 @Entity
-@Table(name = "users_tasks")
+@Table(name = "users")
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder(toBuilder = true)
-public class UserDuplicate implements UserDetails {
+public class User implements UserDetails {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String email;
@@ -26,8 +28,7 @@ public class UserDuplicate implements UserDetails {
     @Builder.Default
     private Role role = Role.GUEST;
 
-    public UserDuplicate(Long id, String name, String email, Role role) {
-        this.id = id;
+    public User(String name, String email, Role role) {
         this.name = name;
         this.email = email;
         this.role = role;
