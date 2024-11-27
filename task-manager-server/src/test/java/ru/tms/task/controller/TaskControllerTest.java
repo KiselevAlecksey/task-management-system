@@ -21,7 +21,7 @@ import ru.tms.config.JwtService;
 import ru.tms.config.SecurityConfig;
 import ru.tms.task.TaskService;
 import ru.tms.token.TokenRepository;
-import ru.tms.userduplicate.UserService;
+import ru.tms.user.UserService;
 
 @WebMvcTest(AdminTaskController.class)
 @AutoConfigureMockMvc

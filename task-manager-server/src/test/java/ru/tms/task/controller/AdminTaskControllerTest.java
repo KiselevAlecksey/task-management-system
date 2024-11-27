@@ -25,9 +25,9 @@ import ru.tms.task.dto.param.AdminStatusAndPriorityParam;
 import ru.tms.task.enums.TaskPriority;
 import ru.tms.task.enums.TaskStatus;
 import ru.tms.token.TokenRepository;
-import ru.tms.userduplicate.UserService;
-import ru.tms.userduplicate.dto.UserCreateDto;
-import ru.tms.userduplicate.model.UserDuplicate;
+import ru.tms.user.UserService;
+import ru.tms.user.dto.UserCreateDto;
+import ru.tms.user.model.User;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -167,7 +167,7 @@ class AdminTaskControllerTest {
     private String getJwtToken() {
         UserCreateDto request = createAdminUserCreateDto();
         String jwtToken = TOKEN_ADMIN;
-        UserDuplicate user = UserDuplicate.builder()
+        User user = User.builder()
                 .id(request.getId())
                 .name(request.getName())
                 .email(request.getEmail())

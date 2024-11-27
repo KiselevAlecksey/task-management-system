@@ -1,9 +1,9 @@
 spring:
   application:
-    name: auth-server
+    name: task-manager-server
 
 server:
-  port: 9090
+  port: 8080
 
 application:
   security:

@@ -23,9 +23,9 @@ import ru.tms.config.SecurityConfig;
 import ru.tms.task.TaskService;
 import ru.tms.task.dto.param.UserStatusParam;
 import ru.tms.token.TokenRepository;
-import ru.tms.userduplicate.UserService;
-import ru.tms.userduplicate.dto.UserCreateDto;
-import ru.tms.userduplicate.model.UserDuplicate;
+import ru.tms.user.UserService;
+import ru.tms.user.dto.UserCreateDto;
+import ru.tms.user.model.User;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -102,7 +102,7 @@ class UserTaskControllerTest {
     private String getJwtToken() {
         UserCreateDto request = createUserCreateDto();
         String jwtToken = TOKEN_USER;
-        UserDuplicate user = UserDuplicate.builder()
+        User user = User.builder()
                 .id(request.getId())
                 .name(request.getName())
                 .email(request.getEmail())

@@ -30,6 +30,7 @@ public class TaskUpdateDto {
     String priority;
 
     Long executorId;
+
     @Hidden
     TaskStatus taskStatus;
     @Hidden

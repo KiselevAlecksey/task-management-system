@@ -3,6 +3,7 @@ package ru.tms.auth;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import ru.tms.auth.dto.AuthenticationResponse;
 import ru.tms.auth.dto.AuthenticationRequest;
 import ru.tms.auth.dto.RegisterRequest;
 import ru.tms.user.UserRestClient;
+import ru.tms.user.dto.UserCreateDto;
 import ru.tms.user.model.Role;
 
 import java.io.IOException;
@@ -33,17 +35,10 @@ public class AuthenticationController {
         log.info("Create new user: {}", request.getEmail());
         Role role = Role.from(request.getRole())
                 .orElseThrow(() -> new IllegalArgumentException("Не поддерживаемая роль: " + request.getRole()));
-
         request.setERole(role);
+
         AuthenticationResponse response = authService.register(request);
-
         log.info("Response from service: {}", response.getUserId());
-
-        request.setId(response.getUserId());
-        String jwt = "Bearer " + response.getAccessToken();
-
-        restClient.register(request, jwt);
-
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

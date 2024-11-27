@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.tms.userduplicate.UserRepository;
-import ru.tms.userduplicate.model.Role;
-import ru.tms.userduplicate.model.UserDuplicate;
+import ru.tms.user.UserRepository;
+import ru.tms.user.model.Role;
+import ru.tms.user.model.User;
 
 import java.security.Key;
 import java.util.Date;
@@ -47,7 +47,7 @@ public class JwtService {
         return extractAllClaims(token);
     }
 
-    public UserDetails extractUser(String token) {
+    public User extractUser(String token) {
             Claims claims = extractClaims(token);
             if (claims == null) {
                 throw new UsernameNotFoundException("Invalid token");
@@ -65,11 +65,7 @@ public class JwtService {
             Role erole = Role.from(role)
                     .orElseThrow(() -> new IllegalArgumentException("Не поддерживаемая роль: " + role));
 
-            UserDuplicate user = new UserDuplicate(userId, name, email, erole);
-
-            userRepository.save(user);
-
-            return user;
+            return new User(name, email, erole);
     }
 
     public String extractUsername(String token) {

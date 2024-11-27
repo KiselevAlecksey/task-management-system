@@ -1,34 +1,33 @@
-package ru.tms.userduplicate.mapper;
+package ru.tms.user.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.tms.userduplicate.dto.UserCreateDto;
-import ru.tms.userduplicate.dto.UserResponseDto;
-import ru.tms.userduplicate.dto.UserUpdateDto;
-import ru.tms.userduplicate.model.UserDuplicate;
+import ru.tms.user.dto.UserCreateDto;
+import ru.tms.user.dto.UserResponseDto;
+import ru.tms.user.dto.UserUpdateDto;
+import ru.tms.user.model.User;
 
 @Component
 @RequiredArgsConstructor
 public final class UserMapper {
 
-    public UserDuplicate mapToUser(UserCreateDto request) {
-        return UserDuplicate.builder()
-                .id(request.getId())
+    public User mapToUser(UserCreateDto request) {
+        return User.builder()
                 .email(request.getEmail())
                 .name(request.getName())
                 .role(request.getERole())
                 .build();
     }
 
-    public UserDuplicate mapToUser(UserUpdateDto request) {
-        return UserDuplicate.builder()
+    public User mapToUser(UserUpdateDto request) {
+        return User.builder()
                 .email(request.getEmail())
                 .name(request.getName())
                 .role(request.getERole())
                 .build();
     }
 
-    public UserResponseDto mapToUserDto(UserDuplicate user) {
+    public UserResponseDto mapToUserDto(User user) {
         return new UserResponseDto(
                 user.getId(),
                 user.getName(),
@@ -36,7 +35,7 @@ public final class UserMapper {
         );
     }
 
-    public UserDuplicate updateUserFields(UserDuplicate user, UserUpdateDto request) {
+    public User updateUserFields(User user, UserUpdateDto request) {
 
         if (request.hasEmail()) {
             user.setEmail(request.getEmail());

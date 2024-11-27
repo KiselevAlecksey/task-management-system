@@ -5,11 +5,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.tms.config.JwtService;
 import ru.tms.auth.dto.AuthenticationRequest;
 import ru.tms.auth.dto.AuthenticationResponse;
@@ -18,6 +21,8 @@ import ru.tms.exception.NotFoundException;
 import ru.tms.token.Token;
 import ru.tms.token.TokenRepository;
 import ru.tms.token.TokenType;
+import ru.tms.user.UserRestClient;
+import ru.tms.user.mapper.UserMapper;
 import ru.tms.user.model.User;
 import ru.tms.user.UserRepository;
 
@@ -32,7 +37,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final UserRestClient restClient;
+    private final UserMapper userMapper;
 
+    @Override
     public AuthenticationResponse register(RegisterRequest request) {
         var user = User.builder()
                 .name(request.getName())
@@ -43,6 +51,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var savedUser = repository.save(user);
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
+
+        log.info("Create new user to tws response: {} start", request.getEmail());
+        restClient.register(userMapper.toUserCreateDto(savedUser), "Bearer " + jwtToken);
+        log.info("Created new user to tws response: {} end", request.getEmail());
         saveUserToken(savedUser, jwtToken, refreshToken);
         return AuthenticationResponse.builder()
                 .userId(savedUser.getId())
@@ -51,6 +63,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
+    @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -94,6 +107,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         tokenRepository.saveAll(validUserTokens);
     }
 
+    @Override
     public void refreshToken(HttpServletRequest request,
                              HttpServletResponse response) throws IOException {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
