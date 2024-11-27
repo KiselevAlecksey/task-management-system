@@ -9,6 +9,8 @@ import ru.tms.task.dto.param.UserStatusParam;
 import ru.tms.task.dto.task.TaskResponseDto;
 import ru.tms.task.enums.TaskStatus;
 
+import java.util.UUID;
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -22,7 +24,7 @@ public class UserTaskController {
 
     @PatchMapping("/{taskId}/status")
     @PreAuthorize("hasAuthority('user:update')")
-    public TaskResponseDto changeStatus(@RequestHeader(USER_ID_HEADER) long userId,
+    public TaskResponseDto changeStatus(@RequestHeader(USER_ID_HEADER) Long userId,
             @RequestParam(required = false) String status, @PathVariable long taskId) {
         log.info("==> Change status {} start", status);
         TaskStatus taskStatus = TaskStatus.from(status)

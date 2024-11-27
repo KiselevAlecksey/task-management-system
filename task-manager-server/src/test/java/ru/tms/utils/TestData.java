@@ -12,11 +12,11 @@ import ru.tms.task.enums.TaskPriority;
 import ru.tms.task.enums.TaskStatus;
 import ru.tms.token.Token;
 import ru.tms.token.TokenType;
-import ru.tms.userduplicate.dto.UserCreateDto;
-import ru.tms.userduplicate.dto.UserResponseDto;
-import ru.tms.userduplicate.dto.UserUpdateDto;
-import ru.tms.userduplicate.model.Role;
-import ru.tms.userduplicate.model.UserDuplicate;
+import ru.tms.user.dto.UserCreateDto;
+import ru.tms.user.dto.UserResponseDto;
+import ru.tms.user.dto.UserUpdateDto;
+import ru.tms.user.model.Role;
+import ru.tms.user.model.User;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -24,11 +24,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @NoArgsConstructor
 public class TestData {
 
     public static final long TEST_USER_ID = 1L;
+    public static final UUID TEST_USER_UUID = UUID.fromString("17adb078-4fc3-4c90-9f18-6e9cfdc1108d");
     public static final long TEST_USER2_ID = 2L;
     public static final long TEST_USER3_ID = 3L;
 
@@ -73,32 +75,32 @@ public class TestData {
     public static final String MAJOR = "MAJOR";
     public static final String BLOCKER = "BLOCKER";
 
-    public static UserDuplicate createUser() {
-        return new UserDuplicate(TEST_USER_ID, "Иван Иванов", "ivan@example.com", EROLE_USER);
+    public static User createUser() {
+        return new User(TEST_USER_UUID, "Иван Иванов", "ivan@example.com", EROLE_USER);
     }
 
     public static UserCreateDto createUserDto() {
-        return new UserCreateDto(TEST_USER_ID, "Иван Иванов2", "ivan2@example.com", PASS, null);
+        return new UserCreateDto(TEST_USER_UUID, "Иван Иванов2", "ivan2@example.com", PASS, null);
     }
 
     public static UserCreateDto createUserDto(String name, String description) {
-        return new UserCreateDto(TEST_USER_ID, name, description, ROLE_USER, EROLE_USER);
+        return new UserCreateDto(TEST_USER_UUID, name, description, ROLE_USER, EROLE_USER);
     }
 
     public static UserCreateDto createUserDto(String name, String email, String role, Role eRole) {
-        return new UserCreateDto(TEST_USER_ID, name, email, role, eRole);
+        return new UserCreateDto(TEST_USER_UUID, name, email, role, eRole);
     }
 
     public static UserResponseDto createdUserDto(Long userId, String name, String description) {
-        return new UserResponseDto(userId, name, description);
+        return new UserResponseDto(TEST_USER_UUID, name, description);
     }
 
     public static UserResponseDto createdUserDto(String name, String description) {
-        return new UserResponseDto(TEST_USER_ID, name, description);
+        return new UserResponseDto(TEST_USER_UUID, name, description);
     }
 
     public static UserResponseDto createdUserDto() {
-        return new UserResponseDto(TEST_USER_ID, "Иван Иванов", "ivan@example.com");
+        return new UserResponseDto(TEST_USER_UUID, "Иван Иванов", "ivan@example.com");
     }
 
     public static UserResponseDto createdUser2Dto() {

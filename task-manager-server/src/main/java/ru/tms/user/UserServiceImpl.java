@@ -1,18 +1,17 @@
-package ru.tms.userduplicate;
+package ru.tms.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import ru.tms.config.multitenancy.TenantContext;
 import ru.tms.exception.NotFoundException;
 import ru.tms.exception.ParameterConflictException;
-import ru.tms.userduplicate.dto.UserCreateDto;
-import ru.tms.userduplicate.dto.UserResponseDto;
-import ru.tms.userduplicate.dto.UserUpdateDto;
-import ru.tms.userduplicate.mapper.UserMapper;
-import ru.tms.userduplicate.model.UserDuplicate;
+import ru.tms.user.dto.UserCreateDto;
+import ru.tms.user.dto.UserResponseDto;
+import ru.tms.user.dto.UserUpdateDto;
+import ru.tms.user.mapper.UserMapper;
+import ru.tms.user.model.User;
+
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -26,21 +25,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto create(UserCreateDto userRequest) {
 
-        UserDuplicate user = userMapper.mapToUser(userRequest);
-        TenantContext.setCurrentTenant("tms");
-        log.info(TenantContext.getCurrentTenant());
+        User user = userMapper.mapToUser(userRequest);
+
         checkEmailConflict(user.getEmail());
 
-        UserDuplicate userCreated = userRepository.save(user);
+        User userCreated = userRepository.save(user);
 
         return userMapper.mapToUserDto(userCreated);
     }
 
     @Override
-    @Transactional
     public UserResponseDto update(UserUpdateDto userRequest) {
 
-        UserDuplicate userUpdated = userRepository.findById(userRequest.getId())
+        User userUpdated = userRepository.findById(userRequest.getId())
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         if (!(userUpdated.getEmail().equals(userRequest.getEmail()))) {
             checkEmailConflict(userMapper.mapToUser(userRequest).getEmail());
@@ -48,18 +45,16 @@ public class UserServiceImpl implements UserService {
 
         userMapper.updateUserFields(userUpdated, userRequest);
 
-        UserDuplicate user = userRepository.save(userUpdated);
+        User user = userRepository.save(userUpdated);
 
         return userMapper.mapToUserDto(user);
     }
 
     @Override
-    @Transactional
-    public void remove(long id) {
+    public void remove(Long id) {
         userRepository.deleteById(id);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
     private void checkEmailConflict(String email) {
         if (userRepository.existsByEmailContainingIgnoreCase(email)) {
             throw new ParameterConflictException("email", "Тайкой email уже занят");

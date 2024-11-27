@@ -1,6 +1,6 @@
 package ru.tms.task.dto.comment;
 
-import ru.tms.userduplicate.dto.UserResponseDto;
+import ru.tms.user.dto.UserResponseDto;
 
 public record CommentResponseDto(
         long id,

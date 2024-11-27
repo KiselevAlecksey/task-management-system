@@ -40,6 +40,14 @@ public final class UserMapper {
         );
     }
 
+    public UserCreateDto toUserCreateDto(User user) {
+        return UserCreateDto.builder()
+                .email(user.getEmail())
+                .name(user.getName())
+                .role(user.getRole().getRoleName())
+                .build();
+    }
+
     public User updateUserFields(User user, UserUpdateDto request) {
 
         if (request.hasEmail()) {

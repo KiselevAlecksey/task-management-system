@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.UUID;
+
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor

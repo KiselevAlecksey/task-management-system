@@ -14,9 +14,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
-import static ru.tms.userduplicate.model.Permission.*;
-import static ru.tms.userduplicate.model.Role.ADMIN;
-import static ru.tms.userduplicate.model.Role.USER;
+import static ru.tms.user.model.Permission.*;
+import static ru.tms.user.model.Role.ADMIN;
+import static ru.tms.user.model.Role.USER;
 
 @Configuration
 @EnableWebSecurity

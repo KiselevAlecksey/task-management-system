@@ -14,8 +14,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.tms.auditing.ApplicationAuditAware;
-import ru.tms.userduplicate.model.Role;
-import ru.tms.userduplicate.model.UserDuplicate;
+import ru.tms.user.model.Role;
+import ru.tms.user.model.User;
 
 @Configuration
 @RequiredArgsConstructor
@@ -34,7 +34,6 @@ public class ApplicationConfig {
             String email = claims.getSubject();
             String role = claims.get("role", String.class);
             String name = claims.get("name", String.class);
-            Long userId = claims.get("userId", Long.class);
 
             if (email == null || role == null) {
                 throw new UsernameNotFoundException("Invalid JWT claims");
@@ -42,7 +41,7 @@ public class ApplicationConfig {
 
             Role erole = Role.from(role)
                     .orElseThrow(() -> new IllegalArgumentException("Не поддерживаемая роль: " + role));
-            return new UserDuplicate(userId, name, email, erole);
+            return new User(name, email, erole);
         };
     }
 
