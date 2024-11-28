@@ -15,8 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static ru.tms.user.model.Permission.*;
-import static ru.tms.user.model.Role.ADMIN;
-import static ru.tms.user.model.Role.USER;
+import static ru.tms.user.model.Role.*;
 
 @Configuration
 @EnableWebSecurity
@@ -49,9 +48,9 @@ public class SecurityConfig {
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
                                 .requestMatchers("/", "/**").permitAll()
-                                .requestMatchers("/users/**").hasAuthority(ADMIN.getRoleName())
+                                .requestMatchers("/users/**").hasAnyAuthority(ADMIN.getRoleName(), USER_REGISTRATION.getRoleName())
                                 .requestMatchers(GET, "/users/**").hasAnyAuthority(ADMIN_UPDATE.name())
-                                .requestMatchers(POST, "/users/**").hasAnyAuthority(ADMIN_CREATE.name())
+                                .requestMatchers(POST, "/users/**").hasAnyAuthority(ADMIN_CREATE.name(), USER_REGISTRATION.name())
                                 .requestMatchers(PATCH, "/users/**").hasAnyAuthority(ADMIN_UPDATE.name())
                                 .requestMatchers(DELETE, "/users/**").hasAnyAuthority(ADMIN_DELETE.name())
                                 .requestMatchers("/users/tasks**").hasAnyAuthority(ADMIN.getRoleName(), USER.getRoleName())
