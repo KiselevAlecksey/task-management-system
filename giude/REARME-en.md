@@ -1,15 +1,19 @@
 
 <p style="text-align: center;">Authentication and task manager microservices simple example</p>
 
+<a href="https://github.com/KiselevAlecksey/task-management-system/blob/main/README.md">
+    <img src="https://img.shields.io/badge/RU_Guide-white?style=plastic&link=https%3A%2F%2Fgithub.com%2FKiselevAlecksey%2Ftask-management-system">
+  </a>
+</p>
+
 <p align="center">
   <a href="#key-features">Key Features</a> •
   <a href="#how-to-use">How To Use</a> •
   <a href="#credits">Credits</a> •
   <a href="#license">License</a>
 </p>
-## Key Features
 
-![Static Badge](https://img.shields.io/badge/RU_Guide-white?style=plastic&link=https%3A%2F%2Fgithub.com%2FKiselevAlecksey%2Ftask-management-system)
+## Key Features
 
 * User Authentication
     - User registration, JWT token refresh
