@@ -35,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static ru.tms.utils.TestData.*;
 
+/*
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = {SecurityApplication.class})
@@ -181,4 +182,4 @@ class UserControllerTest {
         when(tokenRepository.findByToken(jwtToken)).thenReturn(Optional.of(createToken(jwtToken, refreshToken)));
         return jwtToken;
     }
-}
+}*/

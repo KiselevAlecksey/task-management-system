@@ -31,6 +31,8 @@ public class JwtService {
     private long jwtExpiration;
     @Value("${application.security.jwt.refresh-token.expiration}")
     private long refreshExpiration;
+    @Value("${application.security.jwt.short.expiration}")
+    private long jwtShortExpiration;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -47,6 +49,12 @@ public class JwtService {
         extraClaims.put("name", user.getName());
 
         return generateToken(extraClaims, user);
+    }
+
+    public String generateTokenUserCreate(User user) {
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("role", "USER_CREATOR");
+        return buildToken(extraClaims, user, jwtShortExpiration);
     }
 
     private String extractRoleFromUserDetails(UserDetails userDetails) {

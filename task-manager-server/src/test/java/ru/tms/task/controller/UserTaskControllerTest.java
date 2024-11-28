@@ -84,7 +84,7 @@ class UserTaskControllerTest {
     void should_change_status() throws Exception {
         UserStatusParam param = getUserParam();
 
-        when(taskService.changeStatus(param)).thenReturn(responseTaskDto());
+        when(taskService.changeStatus(param)).thenReturn(responseTaskDtoStatusWaiting());
 
         mockMvc.perform(patch("/users/tasks/{taskId}/status", TEST_ID_ONE)
                         .header(USER_ID_HEADER, TEST_USER_ID)

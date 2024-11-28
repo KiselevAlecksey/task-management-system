@@ -17,7 +17,8 @@ public enum Role {
 
     USER(Set.of(USER_READ, USER_CREATE, USER_UPDATE), "USER"),
     ADMIN(Set.of(ADMIN_READ, ADMIN_CREATE, ADMIN_UPDATE, ADMIN_DELETE), "ADMIN"),
-    GUEST(Set.of(), "GUEST");
+    GUEST(Set.of(), "GUEST"),
+    USER_REGISTRATION(Set.of(USER_CREATE), "USER_CREATOR");
 
     private final Set<Permission> permissions;
     private final String roleName;
