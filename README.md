@@ -1,6 +1,6 @@
 
 
-<p style="text-align: center;">Пример микросервисов для входа в систему и управления задачами.</p>
+<p style="text-align: center;">Пример микросервисов для входа в систему и управления задачами</p>
 
 <p align="center">
   <a href="#key-features">Ключевые особенности</a> •
@@ -9,7 +9,7 @@
   <a href="#license">Лицензия</a>
 </p>
 
-![Static Badge](https://img.shields.io/badge/EN_Guide-blue?style=plastic)
+![Static Badge](https://img.shields.io/badge/EN_Guide-blue?style=plastic&cacheSeconds=https%3A%2F%2Fgithub.com%2FKiselevAlecksey%2Ftask-management-system%2Fblob%2Fmain%2Fgiude%2FREARME-en.md)
 
 ## Ключевые особенности
 
