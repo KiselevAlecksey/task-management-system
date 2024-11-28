@@ -9,7 +9,7 @@
 </p>
 ## Key Features
 
-![Static Badge](https://img.shields.io/badge/RU_Guide-white?style=plastic&cacheSeconds=https%3A%2F%2Fgithub.com%2FKiselevAlecksey%2Ftask-management-system)
+![Static Badge](https://img.shields.io/badge/RU_Guide-white?style=plastic&link=https%3A%2F%2Fgithub.com%2FKiselevAlecksey%2Ftask-management-system)
 
 * User Authentication
     - User registration, JWT token refresh
