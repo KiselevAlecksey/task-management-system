@@ -2,7 +2,7 @@
 
 <p style="text-align: center;">Пример микросервисов для входа в систему и управления задачами</p>
 
-<a href="https://github.com/KiselevAlecksey/task-management-system/blob/main/giude/REARME-en.md">
+<a href="https://github.com/KiselevAlecksey/task-management-system/blob/main/giude/README-en.md">
     <img src="https://img.shields.io/badge/EN_Guide-blue?style=plastic&link=https%3A%2F%2Fgithub.com%2FKiselevAlecksey%2Ftask-management-system%2Fblob%2Fmain%2Fgiude%2FREARME-en.md">
   </a>
 </p>
