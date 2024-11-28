@@ -18,13 +18,13 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/users")
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasAnyRole('ADMIN', 'USER_CREATOR')")
 public class UserController {
     private final UserService userService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('admin:create')")
+    @PreAuthorize("hasAnyAuthority('admin:create', 'userCreator:createUser')")
     public UserResponseDto create(@RequestBody @Validated UserCreateDto userRequest) {
         log.info("Handling incoming API request");
 

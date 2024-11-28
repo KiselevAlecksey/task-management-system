@@ -26,7 +26,6 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Tag(name = "Authentication")
 public class AuthenticationController {
-    private final UserRestClient restClient;
     private final AuthenticationService authService;
 
     @PostMapping("/register")

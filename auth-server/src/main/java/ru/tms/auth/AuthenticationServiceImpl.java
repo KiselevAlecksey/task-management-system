@@ -5,19 +5,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.tms.config.JwtService;
 import ru.tms.auth.dto.AuthenticationRequest;
 import ru.tms.auth.dto.AuthenticationResponse;
 import ru.tms.auth.dto.RegisterRequest;
 import ru.tms.exception.NotFoundException;
+import ru.tms.exception.ParameterConflictException;
 import ru.tms.token.Token;
 import ru.tms.token.TokenRepository;
 import ru.tms.token.TokenType;
@@ -32,7 +30,7 @@ import java.io.IOException;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
-    private final UserRepository repository;
+    private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -48,7 +46,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getERole())
                 .build();
-        var savedUser = repository.save(user);
+
+        if (userRepository.existsByEmailContainingIgnoreCase(request.getEmail())) {
+            log.info("Create new user to tws-server response: {} start", request.getEmail());
+            var jwtToken = jwtService.generateTokenUserCreate(user);
+            restClient.register(userMapper.toUserCreateDto(user), "Bearer " + jwtToken);
+            log.info("Created new user to tws-server response: {} end", request.getEmail());
+            throw new ParameterConflictException("email", "Тайкой email уже занят");
+        }
+
+        var savedUser = userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
 
@@ -71,7 +78,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         request.getPassword()
                 )
         );
-        var user = repository.findByEmail(request.getEmail())
+        var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
         var jwtToken = jwtService.generateToken(user);
@@ -119,7 +126,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         refreshToken = authHeader.substring(7);
         userEmail = jwtService.extractUsername(refreshToken);
         if (userEmail != null) {
-            var user = this.repository.findByEmail(userEmail)
+            var user = this.userRepository.findByEmail(userEmail)
                     .orElseThrow();
             if (jwtService.isTokenValid(refreshToken, user)) {
                 var accessToken = jwtService.generateToken(user);
