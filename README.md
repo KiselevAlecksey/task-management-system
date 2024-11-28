@@ -1,6 +1,5 @@
-
-
 <p style="text-align: center;">Пример микросервисов для входа в систему и управления задачами</p>
+
 
 <p align="center">
   <a href="#key-features">Ключевые особенности</a> •
