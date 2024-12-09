@@ -10,13 +10,23 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import ru.tms.auth.dto.AuthenticationResponse;
+import ru.tms.auth.dto.ChangePasswordRequest;
+import ru.tms.exception.ParameterConflictException;
 import ru.tms.token.Token;
 import ru.tms.token.TokenRepository;
+import ru.tms.user.model.User;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static ru.tms.utils.TestData.*;
 
 @Transactional
@@ -39,6 +49,18 @@ class AuthenticationServiceImplTest {
 
         assertEquals(accessToken, responseDto.getAccessToken(), "Поля должны совпадать");
         assertEquals(refreshToken, responseDto.getRefreshToken(), "Поля должны совпадать");
+    }
+
+    @Test
+    @DisplayName("Не должен регистрировать нового пользователя с занятой почтой")
+    void should_not_register_user_with_email_conflict() {
+        authenticationService.register(createRegisterRequest());
+
+        ParameterConflictException exception = assertThrows(ParameterConflictException.class, () -> {
+            authenticationService.register(createRegisterRequest());
+        });
+
+        assertEquals(exception.getReason(), "Тайкой email уже занят");
     }
 
     @Test
@@ -82,6 +104,49 @@ class AuthenticationServiceImplTest {
         Token refreshToken = tokenRepository.findByRefreshToken(token).orElseThrow();
 
         assertNotEquals(tokenCreated.getToken(), refreshToken.getToken(), "Поля должны совпадать");
+    }
+
+    @Test
+    @DisplayName("Должен обновить пароль пользователя")
+    void should_change_user_password() {
+        User userDetails = createUser();
+
+        ChangePasswordRequest changePasswordRequest = ChangePasswordRequest.builder()
+                .currentPassword("password")
+                .newPassword("newpass")
+                .confirmationPassword("newpass")
+                .build();
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(userDetails, "", Collections.singletonList(new SimpleGrantedAuthority("USER")));
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        authenticationService.changePassword(changePasswordRequest, authentication);
+    }
+
+    @Test
+    @DisplayName("Должен обновить пароль пользователя")
+    void should_change_user_wrong_password() {
+        User userDetails = createUser();
+
+        ChangePasswordRequest changePasswordRequest = ChangePasswordRequest.builder()
+                .currentPassword("wrongpass")
+                .newPassword("newpass")
+                .confirmationPassword("newpass")
+                .build();
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(userDetails, "",
+                        Collections.singletonList(new SimpleGrantedAuthority("USER")));
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+            authenticationService.changePassword(changePasswordRequest, authentication);
+        });
+
+        assertEquals(exception.getMessage(), "Wrong password");
     }
 
     static class CustomHttpServletRequestWrapper extends HttpServletRequestWrapper {
