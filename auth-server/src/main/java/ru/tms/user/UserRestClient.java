@@ -2,11 +2,8 @@ package ru.tms.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
-import ru.tms.auth.dto.RegisterRequest;
 import ru.tms.exception.NotFoundException;
 import ru.tms.user.dto.UserCreateDto;
 import ru.tms.user.dto.UserResponseDto;

@@ -37,7 +37,7 @@
 $ git clone git@github.com:KiselevAlecksey/task-management-system.git
 
 # Перейдите в каталог репозитория
-$ cd ваш_репозиторий
+$ cd task-management-system
 
 # Запустите Docker Compose для сборки и запуска приложений
 $ docker-compose up --build

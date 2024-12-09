@@ -19,12 +19,14 @@ import ru.tms.exception.ParameterConflictException;
 import ru.tms.token.Token;
 import ru.tms.token.TokenRepository;
 import ru.tms.token.TokenType;
+import ru.tms.auth.dto.ChangePasswordRequest;
 import ru.tms.user.UserRestClient;
 import ru.tms.user.mapper.UserMapper;
 import ru.tms.user.model.User;
 import ru.tms.user.UserRepository;
 
 import java.io.IOException;
+import java.security.Principal;
 
 @Slf4j
 @Service
@@ -37,6 +39,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final UserRestClient restClient;
     private final UserMapper userMapper;
+
+    @Override
+    public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
+
+        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        if (!user.getPassword().equals(userRepository.findByEmail(user.getEmail())
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден")).getPassword())) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalStateException("Wrong password");
+        }
+
+        if (!request.getNewPassword().equals(request.getConfirmationPassword())) {
+            throw new IllegalStateException("Password are not the same");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+
+        userRepository.save(user);
+    }
 
     @Override
     public AuthenticationResponse register(RegisterRequest request) {

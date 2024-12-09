@@ -1,6 +1,5 @@
 package ru.tms.exception;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,7 +20,6 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFound(final NotFoundException e) {
         log.info("Получен статус 404 Not found {}", e.getMessage(), e);
-
         return new ErrorResponse(e.getMessage());
     }
 
@@ -29,7 +27,6 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleParameterConflict(final ParameterConflictException e) {
         log.info("Received status 409 Conflict {}", e.getMessage(), e);
-
         return new ErrorResponse("Некорректное значение параметра " + e.getParameter() + ": " + e.getReason());
     }
 
@@ -37,7 +34,6 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handle(final Throwable e) {
         log.trace("Получен статус 500 Internal server error {}", e.getMessage(), e);
-
         return new ErrorResponse("Произошла непредвиденная ошибка");
     }
 
@@ -62,7 +58,6 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleConstraintViolation(final ConstraintViolationException e) {
         log.info("Получен статус 400 Bad request {}", e.getMessage(), e);
-
         return new ErrorResponse("Некорректное значение параметра: " + e.getMessage());
     }
 
@@ -70,15 +65,12 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIllegalArgument(final IllegalArgumentException e) {
         log.info("Получен статус 400 Bad request {}", e.getMessage(), e);
-
         return new ErrorResponse("Некорректное значение параметра: " + e.getMessage());
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<String> handleAccessDeniedException(final AccessDeniedException e,
-                                                              HttpServletRequest request) {
-        log.info("Получен статус 400 Bad request {}", e.getMessage(), e);
-
+    @ExceptionHandler
+    public ResponseEntity<String> handleAccessDeniedException(final AccessDeniedException e) {
+        log.info("Получен статус 403 Forbidden {}", e.getMessage(), e);
         return new ResponseEntity<>("Доступ запрещен", HttpStatus.FORBIDDEN);
     }
 }
