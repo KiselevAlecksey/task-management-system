@@ -35,7 +35,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static ru.tms.utils.TestData.*;
 
-/*
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = {SecurityApplication.class})
@@ -91,7 +90,7 @@ class UserControllerTest {
 
         when(userService.findAll()).thenReturn(createUserDtoList());
 
-        mockMvc.perform(get("/users")
+        mockMvc.perform(get("/auth/users")
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
                 .andDo(print());
@@ -105,7 +104,7 @@ class UserControllerTest {
 
         when(userService.getById(TEST_USER_ID)).thenReturn(createdUserDto());
 
-        mockMvc.perform(get("/users/{userId}", TEST_USER_ID)
+        mockMvc.perform(get("/auth/users/{userId}", TEST_USER_ID)
                 .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
                 .andDo(print());
@@ -119,7 +118,7 @@ class UserControllerTest {
 
         when(userService.create(createUserDto())).thenReturn(createdUserDto());
 
-        mockMvc.perform(post("/users")
+        mockMvc.perform(post("/auth/users")
                         .header("Authorization", "Bearer " + jwtToken)
                         .content(mapper.writeValueAsString(createUserDto()))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -137,7 +136,7 @@ class UserControllerTest {
 
         when(userService.update(updateUserDto())).thenReturn(updatedUserDto());
 
-        mockMvc.perform(patch("/users/{userId}", TEST_USER_ID)
+        mockMvc.perform(patch("/auth/users/{userId}", TEST_USER_ID)
                         .header("Authorization", "Bearer " + jwtToken)
                 .content(mapper.writeValueAsString(updateUserDto()))
                 .characterEncoding(StandardCharsets.UTF_8)
@@ -154,7 +153,7 @@ class UserControllerTest {
     void should_remove_user() throws Exception {
         doNothing().when(userService).remove(eq(TEST_USER_ID));
 
-        mockMvc.perform(delete("/users/{userId}", TEST_USER_ID)
+        mockMvc.perform(delete("/auth/users/{userId}", TEST_USER_ID)
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isNoContent())
                 .andDo(print());
@@ -182,4 +181,4 @@ class UserControllerTest {
         when(tokenRepository.findByToken(jwtToken)).thenReturn(Optional.of(createToken(jwtToken, refreshToken)));
         return jwtToken;
     }
-}*/
+}
